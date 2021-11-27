@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type piece string
@@ -35,6 +36,16 @@ var pieces = map[piece]string{
 // array of [rank, file]
 // e.g. [1, 4] (D1)
 type position [2]int
+
+func ToPosition(square string) position {
+	if len(square) != 2 {
+		return position{0, 0}
+	}
+
+	rank, _ := strconv.Atoi(string(square[1]))
+	file := FileToColumn(string(square[0]))
+	return position{rank, file}
+}
 
 func (p position) String() string {
 	return p.File() + p.Rank()

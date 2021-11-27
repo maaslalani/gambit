@@ -2,15 +2,14 @@ package main
 
 import (
 	"log"
-	"strconv"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 func main() {
 	m := model{}
-	m.Board.Pieces = append(m.Board.Pieces, WhitePieces()...)
-	m.Board.Pieces = append(m.Board.Pieces, BlackPieces()...)
+	m.Board.Init(append(WhitePieces(), BlackPieces()...))
 	p := tea.NewProgram(m, tea.WithMouseAllMotion())
 	if err := p.Start(); err != nil {
 		log.Fatal(err)
@@ -19,48 +18,39 @@ func main() {
 
 type model struct {
 	Board Board
-	Move  struct {
-		From position
-		To   position
-	}
+	From  string
+	To    string
 }
 
 func (m model) Init() tea.Cmd { return nil }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	m.Board.Draw()
-
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "esc":
-			if m.Move.From[0] > 0 && m.Move.From[1] > 0 {
-				m.Board.Grid[m.Move.From[0]-1][m.Move.From[1]-1].Selected = false
-			}
-			m.Move.From, m.Move.To = position{}, position{}
+			m.From, m.To = "", ""
 		case "1", "2", "3", "4", "5", "6", "7", "8":
-			i, _ := strconv.Atoi(msg.String())
+			rank := msg.String()
 			// `From` and `To` moves will be complete, perform move
-			if m.Move.To[1] > 0 {
-				m.Move.To[0] = i
-				m.Board.Grid[m.Move.From[0]-1][m.Move.From[1]-1].Selected = false
-				m.Board.Move(m.Move.From, m.Move.To)
-				m.Move.From, m.Move.To = position{}, position{}
+			if len(m.To) >= 1 {
+				m.To += rank
+				m.Board.Move(m.From, m.To)
+				m.From, m.To = "", ""
 			} else {
-				m.Move.From[0] = i
-				m.Board.Grid[i-1][m.Move.From[1]-1].Selected = true
+				m.From += rank
 			}
 			return m, nil
 		case "a", "b", "c", "d", "e", "f", "g", "h",
 			"A", "B", "C", "D", "E", "F", "G", "H":
-			col := FileToColumn(msg.String())
+			file := strings.ToUpper(msg.String())
 			// If we already have the `From` rank set, set the `To` column
-			if m.Move.From[0] > 0 {
-				m.Move.To[1] = col
+			if len(m.From) == 2 {
+				m.To = file
 			} else {
-				m.Move.From[1] = col
+				m.From = file
 			}
 
 			return m, nil

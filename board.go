@@ -22,27 +22,27 @@ const (
 )
 
 type Board struct {
-	Pieces  []*Piece
 	Grid    [dimensions][dimensions]*Piece
 	flipped bool
 }
 
-func (b *Board) Move(from, to position) {
-	p := b.Grid[from[0]-1][from[1]-1]
+func (b *Board) Move(from, to string) {
+	fromPos, toPos := ToPosition(from), ToPosition(to)
+	p := b.Grid[fromPos[0]-1][fromPos[1]-1]
 	if p == nil {
 		return
 	}
-	cp := b.Grid[to[0]-1][to[1]-1]
+	cp := b.Grid[toPos[0]-1][toPos[1]-1]
 	if cp != nil {
 		// TODO: Capture
 	}
-	b.Grid[from[0]-1][from[1]-1] = nil
-	b.Grid[to[0]-1][to[1]-1] = p
-	p.Position = to
+	b.Grid[fromPos[0]-1][fromPos[1]-1] = nil
+	b.Grid[toPos[0]-1][toPos[1]-1] = p
+	p.Position = toPos
 }
 
-func (b *Board) Draw() {
-	for _, piece := range b.Pieces {
+func (b *Board) Init(pieces []*Piece) {
+	for _, piece := range pieces {
 		p := piece
 		b.Grid[piece.Position[0]-1][piece.Position[1]-1] = p
 	}
