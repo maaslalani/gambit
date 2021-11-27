@@ -1,10 +1,19 @@
 package main
 
-const dimensions = 8
-const firstRow = 0
-const firstCol = 0
-const lastRow = dimensions - 1
-const lastCol = dimensions - 1
+const (
+	dimensions = 8
+	firstRow   = 0
+	firstCol   = 0
+	lastRow    = dimensions - 1
+	lastCol    = dimensions - 1
+)
+
+const (
+	header  = "\n ┌───┬───┬───┬───┬───┬───┬───┬───┐ \n"
+	middle  = "\n ├───┼───┼───┼───┼───┼───┼───┼───┤ \n"
+	footer  = "\n └───┴───┴───┴───┴───┴───┴───┴───┘ \n"
+	divider = " │ "
+)
 
 type Board struct {
 	Players []Player
@@ -20,27 +29,22 @@ func (b *Board) Draw() {
 }
 
 func (b *Board) String() string {
-	var s string
-	for row := 0; row < dimensions; row++ {
-		if row == firstRow {
-			s += " ┌───┬───┬───┬───┬───┬───┬───┬───┐ \n"
-		}
-		for col := 0; col < dimensions; col++ {
-			s += " │ "
+	var s = header
+	for row := firstRow; row < dimensions; row++ {
+		for col := firstCol; col < dimensions; col++ {
+			s += divider
 			if b.Grid[row][col] == "" {
 				s += " "
 			} else {
 				s += b.Grid[row][col]
 			}
 			if col == lastCol {
-				s += " │ "
+				s += divider
 			}
 		}
-		if row == lastRow {
-			s += "\n └───┴───┴───┴───┴───┴───┴───┴───┘ \n"
-		} else {
-			s += "\n ├───┼───┼───┼───┼───┼───┼───┼───┤ \n"
+		if row != lastRow {
+			s += middle
 		}
 	}
-	return s
+	return s + footer
 }
