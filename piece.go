@@ -83,35 +83,3 @@ func NewPiece(piece piece, position position, color color) *Piece {
 		Color:    color,
 	}
 }
-
-func InitialPieces(color color) []*Piece {
-	var pieces []*Piece
-	var (
-		pawnRank int
-		backRank int
-	)
-
-	if color == White {
-		backRank, pawnRank = 1, 2
-	} else {
-		backRank, pawnRank = 8, 7
-	}
-
-	for i := 1; i <= 8; i++ {
-		pieces = append(pieces, NewPiece(Pawn, position{pawnRank, i}, color))
-	}
-
-	for i, p := range []piece{Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook} {
-		pieces = append(pieces, NewPiece(p, position{backRank, i + 1}, color))
-	}
-
-	return pieces
-}
-
-func BlackPieces() []*Piece {
-	return InitialPieces(Black)
-}
-
-func WhitePieces() []*Piece {
-	return InitialPieces(White)
-}

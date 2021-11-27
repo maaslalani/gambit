@@ -25,13 +25,3 @@ func TestPosition(t *testing.T) {
 		}
 	}
 }
-
-func TestInitialPieces(t *testing.T) {
-	whitePieces := InitialPieces(White)
-	blackPieces := InitialPieces(Black)
-	if len(whitePieces) != 16 || len(blackPieces) != 16 {
-		t.Logf("got %d white pieces", len(whitePieces))
-		t.Logf("got %d black pieces", len(blackPieces))
-		t.Fatal("set should have 16 pieces per color")
-	}
-}

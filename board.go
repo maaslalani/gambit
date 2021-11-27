@@ -41,11 +41,78 @@ func (b *Board) Move(from, to string) {
 	p.Position = toPos
 }
 
-func (b *Board) Init(pieces []*Piece) {
-	for _, piece := range pieces {
-		p := piece
-		b.Grid[piece.Position[0]-1][piece.Position[1]-1] = p
+// Deserialize sets the board with pieces from a serialized format
+// usually read from a file. Example: board.txt
+func Deserialize(board string) *Board {
+	var b Board
+	lines := strings.Split(board, "\n")[:8]
+	for row, line := range lines {
+		for col, square := range line {
+			if square == '.' {
+				b.Grid[row][col] = nil
+				continue
+			}
+
+			var piece = &Piece{}
+			if square < 97 {
+				piece.Color = White
+			} else {
+				piece.Color = Black
+			}
+			switch strings.ToUpper(string(square)) {
+			case "B":
+				piece.Type = Bishop
+			case "K":
+				piece.Type = King
+			case "N":
+				piece.Type = Knight
+			case "P":
+				piece.Type = Pawn
+			case "Q":
+				piece.Type = Queen
+			case "R":
+				piece.Type = Rook
+			}
+			piece.Position = position{row, col}
+			b.Grid[row][col] = piece
+		}
 	}
+	return &b
+}
+
+// Serialize returns a string of the current board
+// usually read from a file. Example: boards/board.1
+func Serialize(b *Board) string {
+	var sb strings.Builder
+	for _, rank := range b.Grid {
+		for _, piece := range rank {
+			if piece == nil {
+				sb.WriteString(".")
+				continue
+			}
+			var sp string
+			switch piece.Type {
+			case Bishop:
+				sp = "B"
+			case King:
+				sp = "K"
+			case Knight:
+				sp = "N"
+			case Pawn:
+				sp = "P"
+			case Queen:
+				sp = "Q"
+			case Rook:
+				sp = "R"
+			}
+			if piece.Color == Black {
+				sp = strings.ToLower(sp)
+			}
+			sb.WriteString(sp)
+		}
+		sb.WriteString("\n")
+	}
+	return strings.TrimSuffix(sb.String(), "\n")
 }
 
 func FileToColumn(file string) int {

@@ -1,15 +1,19 @@
 package main
 
 import (
+	_ "embed"
 	"log"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+//go:embed board.txt
+var initialBoard string
+
 func main() {
 	m := model{}
-	m.Board.Init(append(WhitePieces(), BlackPieces()...))
+	m.Board = *Deserialize(string(initialBoard))
 	p := tea.NewProgram(m, tea.WithMouseAllMotion())
 	if err := p.Start(); err != nil {
 		log.Fatal(err)
