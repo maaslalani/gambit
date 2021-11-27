@@ -5,16 +5,28 @@ Chess board in your terminal.
 ### Play
 
 ```
-. . . . . . . . . .
-. ♜	♞	♝	♛	♚	♝	♞	♜ .
-. ♟	♟	♟	♟	♟	♟	♟	♟ .
-.                 .
-.                 .
-.                 .
-.                 .
-. ♙	♙	♙	♙	♙	♙	♙	♙ .
-. ♖	♘	♗	♕	♔	♗	♘	♖ .
-. . . . . . . . . .
+
+    ┌───┬───┬───┬───┬───┬───┬───┬───┐
+ 8  │ ♜ │ ♞ │ ♝ │ ♛ │ ♚ │ ♞ │ ♝ │ ♜ │
+    ├───┼───┼───┼───┼───┼───┼───┼───┤
+ 7  │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │
+    ├───┼───┼───┼───┼───┼───┼───┼───┤
+ 6  │   │   │   │   │   │   │   │   │
+    ├───┼───┼───┼───┼───┼───┼───┼───┤
+ 5  │   │   │   │   │   │   │   │   │
+    ├───┼───┼───┼───┼───┼───┼───┼───┤
+ 4  │   │   │   │   │   │   │   │   │
+    ├───┼───┼───┼───┼───┼───┼───┼───┤
+ 3  │   │   │   │   │   │   │   │   │
+    ├───┼───┼───┼───┼───┼───┼───┼───┤
+ 2  │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │
+    ├───┼───┼───┼───┼───┼───┼───┼───┤
+ 1  │ ♖ │ ♘ │ ♗ │ ♕ │ ♔ │ ♘ │ ♗ │ ♖ │
+    └───┴───┴───┴───┴───┴───┴───┴───┘
+
+      A   B   C   D   E   F   G   H
+
+
 ```
 
 ### Move
@@ -30,7 +42,7 @@ _This will likely change in the future_.
 
 `gambit` supports local and networked play. You can play a local game by
 running `gambit` and moving the pieces. You can flip the board by pressing
-<kbd>Space</kbd> to allow the second player to go.
+<kbd>ctrl+f</kbd> to allow the second player to go.
 
-For networked play, both players can run `gambit unique-room-id`, this will connect
+For networked play (not available yet), both players can run `gambit unique-room-id`, this will connect
 both players to a shared room in which both can take turns making moves.
