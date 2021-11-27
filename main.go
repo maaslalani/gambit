@@ -25,6 +25,8 @@ type model struct {
 func (m model) Init() tea.Cmd { return nil }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	m.Board.Draw()
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {

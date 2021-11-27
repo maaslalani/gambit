@@ -92,7 +92,7 @@ func InitialPieces(color color) []Piece {
 	}
 
 	for i, p := range []piece{Rook, Knight, Bishop, Queen, King, Knight, Bishop, Rook} {
-		pieces = append(pieces, NewPiece(p, position{backRank, i}, color))
+		pieces = append(pieces, NewPiece(p, position{backRank, i + 1}, color))
 	}
 
 	return pieces
