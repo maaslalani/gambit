@@ -38,16 +38,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "esc":
+			if m.Move.From[0] > 0 && m.Move.From[1] > 0 {
+				m.Board.Grid[m.Move.From[0]-1][m.Move.From[1]-1].Selected = false
+			}
 			m.Move.From, m.Move.To = position{}, position{}
 		case "1", "2", "3", "4", "5", "6", "7", "8":
 			i, _ := strconv.Atoi(msg.String())
 			// `From` and `To` moves will be complete, perform move
 			if m.Move.To[1] > 0 {
 				m.Move.To[0] = i
+				m.Board.Grid[m.Move.From[0]-1][m.Move.From[1]-1].Selected = false
 				m.Board.Move(m.Move.From, m.Move.To)
 				m.Move.From, m.Move.To = position{}, position{}
 			} else {
 				m.Move.From[0] = i
+				m.Board.Grid[i-1][m.Move.From[1]-1].Selected = true
 			}
 			return m, nil
 		case "a", "b", "c", "d", "e", "f", "g", "h",
@@ -71,7 +76,5 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	return m.Board.String() + "\n\n" +
-		m.Move.From.String() + " " +
-		m.Move.To.String()
+	return m.Board.String() + "\n"
 }

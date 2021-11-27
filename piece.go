@@ -52,10 +52,13 @@ type Piece struct {
 	Type     piece
 	Color    color
 	Position position
-	Active   bool
+	Selected bool
 }
 
 func (p Piece) String() string {
+	if p.Selected {
+		return activeStyle.Render(pieces[p.Type])
+	}
 	if p.Color == Black {
 		return faintStyle.Render(pieces[p.Type])
 	}

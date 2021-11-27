@@ -32,6 +32,10 @@ func (b *Board) Move(from, to position) {
 	if p == nil {
 		return
 	}
+	cp := b.Grid[to[0]-1][to[1]-1]
+	if cp != nil {
+		// TODO: Capture
+	}
 	b.Grid[from[0]-1][from[1]-1] = nil
 	b.Grid[to[0]-1][to[1]-1] = p
 	p.Position = to
