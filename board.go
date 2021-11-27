@@ -22,7 +22,7 @@ const (
 )
 
 type Board struct {
-	Players []Player
+	Pieces  []*Piece
 	Grid    [dimensions][dimensions]*Piece
 	flipped bool
 }
@@ -42,11 +42,9 @@ func (b *Board) Move(from, to position) {
 }
 
 func (b *Board) Draw() {
-	for _, player := range b.Players {
-		for _, piece := range player.Pieces {
-			p := piece
-			b.Grid[piece.Position[0]-1][piece.Position[1]-1] = p
-		}
+	for _, piece := range b.Pieces {
+		p := piece
+		b.Grid[piece.Position[0]-1][piece.Position[1]-1] = p
 	}
 }
 

@@ -9,10 +9,8 @@ import (
 
 func main() {
 	m := model{}
-	m.Board.Players = []Player{
-		{Pieces: BlackPieces()},
-		{Pieces: WhitePieces()},
-	}
+	m.Board.Pieces = append(m.Board.Pieces, WhitePieces()...)
+	m.Board.Pieces = append(m.Board.Pieces, BlackPieces()...)
 	p := tea.NewProgram(m, tea.WithMouseAllMotion())
 	if err := p.Start(); err != nil {
 		log.Fatal(err)
