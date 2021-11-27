@@ -16,15 +16,25 @@ func (b *Board) Draw() {
 func (b *Board) String() string {
 	var s string
 	for row := 0; row < 8; row++ {
+		if row == 0 {
+			s += " ┌───┬───┬───┬───┬───┬───┬───┬───┐ \n"
+		}
 		for col := 0; col < 8; col++ {
-			s += " "
+			s += " │ "
 			if b.Grid[row][col] == "" {
 				s += " "
 			} else {
 				s += b.Grid[row][col]
 			}
+			if col == 7 {
+				s += " │ "
+			}
 		}
-		s += "\n"
+		if row == 7 {
+			s += "\n └───┴───┴───┴───┴───┴───┴───┴───┘ \n"
+		} else {
+			s += "\n ├───┼───┼───┼───┼───┼───┼───┼───┤ \n"
+		}
 	}
 	return s
 }
