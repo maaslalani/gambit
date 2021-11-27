@@ -2,7 +2,10 @@ module github.com/maaslalani/gambit
 
 go 1.17
 
-require github.com/charmbracelet/bubbletea v0.19.1
+require (
+	github.com/charmbracelet/bubbletea v0.19.1
+	github.com/charmbracelet/lipgloss v0.4.0
+)
 
 require (
 	github.com/containerd/console v1.0.2 // indirect

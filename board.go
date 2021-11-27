@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+
+	"github.com/charmbracelet/lipgloss"
+)
+
 const (
 	dimensions = 8
 	firstRow   = 0
@@ -9,11 +15,14 @@ const (
 )
 
 const (
-	header  = "\n ┌───┬───┬───┬───┬───┬───┬───┬───┐ \n"
-	middle  = "\n ├───┼───┼───┼───┼───┼───┼───┼───┤ \n"
-	footer  = "\n └───┴───┴───┴───┴───┴───┴───┴───┘ \n"
-	divider = " │ "
+	header       = "\n    ┌───┬───┬───┬───┬───┬───┬───┬───┐ \n"
+	middle       = "\n    ├───┼───┼───┼───┼───┼───┼───┼───┤ \n"
+	footer       = "\n    └───┴───┴───┴───┴───┴───┴───┴───┘ \n"
+	footerLabels = "\n      A   B   C   D   E   F   G   H   \n"
+	divider      = " │ "
 )
+
+var faintStyle = lipgloss.NewStyle().Faint(true)
 
 type Board struct {
 	Players []Player
@@ -32,6 +41,9 @@ func (b *Board) String() string {
 	var s = header
 	for row := firstRow; row < dimensions; row++ {
 		for col := firstCol; col < dimensions; col++ {
+			if col == firstCol {
+				s += faintStyle.Render(fmt.Sprintf(" %d ", dimensions-row))
+			}
 			s += divider
 			if b.Grid[row][col] == "" {
 				s += " "
@@ -46,5 +58,5 @@ func (b *Board) String() string {
 			s += middle
 		}
 	}
-	return s + footer
+	return s + footer + faintStyle.Render(footerLabels)
 }
