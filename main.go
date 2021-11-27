@@ -35,8 +35,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q", "esc":
+		case "ctrl+c", "q":
 			return m, tea.Quit
+		case "esc":
+			m.Move.From, m.Move.To = position{}, position{}
 		case "1", "2", "3", "4", "5", "6", "7", "8":
 			if m.Move.To[1] > 0 {
 				i, _ := strconv.Atoi(msg.String())
