@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type piece string
 
@@ -20,23 +22,13 @@ const (
 	Black color = "black"
 )
 
-var pieces = map[color]map[piece]string{
-	Black: {
-		Pawn:   "♟",
-		Bishop: "♝",
-		Rook:   "♜",
-		Knight: "♞",
-		Queen:  "♛",
-		King:   "♚",
-	},
-	White: {
-		Pawn:   "♙",
-		Bishop: "♗",
-		Rook:   "♖",
-		Knight: "♘",
-		Queen:  "♕",
-		King:   "♔",
-	},
+var pieces = map[piece]string{
+	Pawn:   "♟",
+	Bishop: "♝",
+	Rook:   "♜",
+	Knight: "♞",
+	Queen:  "♛",
+	King:   "♚",
 }
 
 // array of [row,  column]
@@ -64,7 +56,10 @@ type Piece struct {
 }
 
 func (p Piece) String() string {
-	return pieces[p.Color][p.Type]
+	if p.Color == Black {
+		return faintStyle.Render(pieces[p.Type])
+	}
+	return pieces[p.Type]
 }
 
 func NewPiece(piece piece, position position, color color) *Piece {

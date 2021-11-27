@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-
-	"github.com/charmbracelet/lipgloss"
 )
 
 const (
@@ -22,8 +20,6 @@ const (
 	footerLabels = "\n      A   B   C   D   E   F   G   H   \n"
 	divider      = " │ "
 )
-
-var faintStyle = lipgloss.NewStyle().Faint(true)
 
 type Board struct {
 	Players []Player
