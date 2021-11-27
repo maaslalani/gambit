@@ -1,8 +1,14 @@
 package main
 
+const dimensions = 8
+const firstRow = 0
+const firstCol = 0
+const lastRow = dimensions - 1
+const lastCol = dimensions - 1
+
 type Board struct {
 	Players []Player
-	Grid    [8][8]string
+	Grid    [dimensions][dimensions]string
 }
 
 func (b *Board) Draw() {
@@ -15,22 +21,22 @@ func (b *Board) Draw() {
 
 func (b *Board) String() string {
 	var s string
-	for row := 0; row < 8; row++ {
-		if row == 0 {
+	for row := 0; row < dimensions; row++ {
+		if row == firstRow {
 			s += " ┌───┬───┬───┬───┬───┬───┬───┬───┐ \n"
 		}
-		for col := 0; col < 8; col++ {
+		for col := 0; col < dimensions; col++ {
 			s += " │ "
 			if b.Grid[row][col] == "" {
 				s += " "
 			} else {
 				s += b.Grid[row][col]
 			}
-			if col == 7 {
+			if col == lastCol {
 				s += " │ "
 			}
 		}
-		if row == 7 {
+		if row == lastRow {
 			s += "\n └───┴───┴───┴───┴───┴───┴───┴───┘ \n"
 		} else {
 			s += "\n ├───┼───┼───┼───┼───┼───┼───┼───┤ \n"
