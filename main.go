@@ -7,13 +7,19 @@ import (
 )
 
 func main() {
-	p := tea.NewProgram(model{}, tea.WithMouseAllMotion())
+	m := model{}
+	m.Board.Players = []Player{
+		{Pieces: BlackPieces()},
+		{Pieces: WhitePieces()},
+	}
+	p := tea.NewProgram(m, tea.WithMouseAllMotion())
 	if err := p.Start(); err != nil {
 		log.Fatal(err)
 	}
 }
 
 type model struct {
+	Board Board
 }
 
 func (m model) Init() tea.Cmd { return nil }
@@ -31,5 +37,5 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	return "Gambit"
+	return m.Board.String()
 }
