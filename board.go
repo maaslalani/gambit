@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 )
@@ -26,16 +27,34 @@ var faintStyle = lipgloss.NewStyle().Faint(true)
 
 type Board struct {
 	Players []Player
-	Grid    [dimensions][dimensions]string
+	Grid    [dimensions][dimensions]*Piece
 	flipped bool
+}
+
+func (b *Board) Move(from, to position) {
+	p := b.Grid[from[0]-1][from[1]-1]
+	if p == nil {
+		return
+	}
+	b.Grid[from[0]-1][from[1]-1] = nil
+	b.Grid[to[0]-1][to[1]-1] = p
+	p.Position = to
 }
 
 func (b *Board) Draw() {
 	for _, player := range b.Players {
 		for _, piece := range player.Pieces {
-			b.Grid[piece.Position[0]-1][piece.Position[1]-1] = piece.String()
+			p := piece
+			b.Grid[piece.Position[0]-1][piece.Position[1]-1] = p
 		}
 	}
+}
+
+func FileToColumn(file string) int {
+	if len(file) < 1 {
+		return 0
+	}
+	return int([]rune(strings.ToUpper(file))[0] - 64)
 }
 
 func (b *Board) String() string {
@@ -50,17 +69,17 @@ func (b *Board) String() string {
 	}
 
 	for row, rank := range ranks {
-		for col := firstCol; col < dimensions; col++ {
-			if col == firstCol {
+		for file := firstCol; file < dimensions; file++ {
+			if file == firstCol {
 				s += faintStyle.Render(fmt.Sprintf(" %d ", rank+1))
 			}
 			s += divider
-			if b.Grid[rank][col] == "" {
+			if b.Grid[rank][file] == nil {
 				s += " "
 			} else {
-				s += b.Grid[rank][col]
+				s += b.Grid[rank][file].String()
 			}
-			if col == lastCol {
+			if file == lastCol {
 				s += divider
 			}
 		}

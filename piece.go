@@ -39,20 +39,21 @@ var pieces = map[color]map[piece]string{
 	},
 }
 
-// array of [row, column]
-// e.g. [1, 4]
+// array of [row,  column]
+// array of [rank, file]
+// e.g. [1, 4] (D1)
 type position [2]int
 
 func (p position) String() string {
-	return p.Row() + p.Col()
+	return p.File() + p.Rank()
 }
 
-func (p position) Row() string {
-	return string(rune('A' - 1 + p[0]))
+func (p position) File() string {
+	return string(rune('A' - 1 + p[1]))
 }
 
-func (p position) Col() string {
-	return fmt.Sprint(p[1])
+func (p position) Rank() string {
+	return fmt.Sprint(p[0])
 }
 
 type Piece struct {
@@ -66,16 +67,16 @@ func (p Piece) String() string {
 	return pieces[p.Color][p.Type]
 }
 
-func NewPiece(piece piece, position position, color color) Piece {
-	return Piece{
+func NewPiece(piece piece, position position, color color) *Piece {
+	return &Piece{
 		Type:     piece,
 		Position: position,
 		Color:    color,
 	}
 }
 
-func InitialPieces(color color) []Piece {
-	var pieces []Piece
+func InitialPieces(color color) []*Piece {
+	var pieces []*Piece
 	var (
 		pawnRank int
 		backRank int
@@ -98,10 +99,10 @@ func InitialPieces(color color) []Piece {
 	return pieces
 }
 
-func BlackPieces() []Piece {
+func BlackPieces() []*Piece {
 	return InitialPieces(Black)
 }
 
-func WhitePieces() []Piece {
+func WhitePieces() []*Piece {
 	return InitialPieces(White)
 }
