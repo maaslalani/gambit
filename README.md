@@ -8,9 +8,14 @@ Chess board in your terminal.
 </p>
 <br/>
 
+### Warning
+
+`gambit` does not have many features at the moment.
+I plan on adding a chess engine, mouse support, timers, networked play, game replays, etc...
+
 ### Move
 
-Suppose you want to open as white with Pawn E4.
+Suppose you want to open as white with Pawn `E4`.
 You will first select the square with the piece you want to move by typing `E2`,
 then type the square of the desired end position `E4`.
 
