@@ -10,8 +10,9 @@ type model struct {
 }
 
 func Model() tea.Model {
+	b, _ := board.FromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	return model{
-		board: board.New(),
+		board: b,
 	}
 }
 

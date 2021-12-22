@@ -29,6 +29,7 @@ func (b Board) ToFen() string {
 				// empty squares we have encountered so far
 				if emptyCounter > 0 {
 					sb.WriteString(strconv.Itoa(emptyCounter))
+					emptyCounter = 0
 				}
 			}
 
@@ -40,6 +41,7 @@ func (b Board) ToFen() string {
 		// empty squares dump the number of empty squares
 		if emptyCounter > 0 {
 			sb.WriteString(strconv.Itoa(emptyCounter))
+			emptyCounter = 0
 		}
 
 		if r > 0 {
@@ -68,18 +70,21 @@ func FromFen(fen string) (Board, error) {
 	ranks := strings.Split(parts[0], "/")
 
 	for r, rank := range ranks {
-		for c, char := range rank {
+		col := 0
+		for _, char := range rank {
 			// Empty squares, append n empty pieces into the board
 			if char >= '1' && char <= '8' {
 				n := int(char - '0')
 				for i := 0; i < n; i++ {
-					b.Grid[7-r][c+i] = piece.Empty()
+					b.Grid[7-r][col] = piece.Empty()
+					col += 1
 				}
 				continue
 			}
 
 			p := piece.FromFen(string(char))
-			b.Grid[7-r][c] = p
+			b.Grid[7-r][col] = p
+			col += 1
 		}
 	}
 
