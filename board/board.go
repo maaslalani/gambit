@@ -12,15 +12,7 @@ type Board struct {
 }
 
 func New() Board {
-	grid := [8][8]piece.Piece{
-		{piece.Piece{Type: piece.King, Color: piece.White}, piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
-		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
-		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
-		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
-		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
-		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
-		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
-		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
-	}
-	return Board{grid: grid}
+	ep := piece.Empty()
+	er := [8]piece.Piece{ep, ep, ep, ep, ep, ep, ep, ep}
+	return Board{grid: [8][8]piece.Piece{er, er, er, er, er, er, er, er}}
 }
