@@ -49,3 +49,5 @@ func ColumnToFile(column int) string {
 func FileToColumn(file byte) int {
 	return int(file - 'A')
 }
+
+var NoPosition = Position{-1, -1}
