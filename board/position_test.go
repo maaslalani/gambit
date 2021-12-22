@@ -4,18 +4,18 @@ import "testing"
 
 func TestPosition(t *testing.T) {
 	tt := []struct {
+		s   string
 		row int
 		col int
-		s   string
 	}{
-		{0, 7, "H1"},
-		{1, 6, "G2"},
-		{2, 5, "F3"},
-		{3, 4, "E4"},
-		{4, 3, "D5"},
-		{5, 2, "C6"},
-		{6, 1, "B7"},
-		{7, 0, "A8"},
+		{"A8", 7, 0},
+		{"B7", 6, 1},
+		{"C6", 5, 2},
+		{"D5", 4, 3},
+		{"E4", 3, 4},
+		{"F3", 2, 5},
+		{"G2", 1, 6},
+		{"H1", 0, 7},
 	}
 
 	for i, tc := range tt {
