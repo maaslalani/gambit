@@ -34,7 +34,7 @@ const (
 func (b Board) String() string {
 	var s string
 
-	if b.reversed {
+	if b.Reversed {
 		ranks = reverse(ranks)
 	}
 

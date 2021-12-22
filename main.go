@@ -8,7 +8,11 @@ import (
 )
 
 func main() {
-	p := tea.NewProgram(game.Model())
+	p := tea.NewProgram(
+		game.Model(),
+		tea.WithAltScreen(),
+		tea.WithMouseCellMotion(),
+	)
 
 	err := p.Start()
 	if err != nil {

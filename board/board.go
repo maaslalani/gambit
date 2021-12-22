@@ -8,7 +8,7 @@ type Board struct {
 	// The board is represented as a 2D array of cells.
 	// The first index is the row, the second is the column.
 	Grid     [8][8]piece.Piece
-	reversed bool
+	Reversed bool
 	Turn     piece.Color
 }
 

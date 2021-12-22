@@ -68,3 +68,7 @@ const (
 	H7        = "H7"
 	H8        = "H8"
 )
+
+func (s Square) String() string {
+	return string(s)
+}

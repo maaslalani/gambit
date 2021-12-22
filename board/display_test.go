@@ -34,7 +34,7 @@ func TestDisplay(t *testing.T) {
 
 func TestDisplayReversed(t *testing.T) {
 	b := New()
-	b.reversed = true
+	b.Reversed = true
 	expected := `
     ┌───┬───┬───┬───┬───┬───┬───┬───┐
  1  │   │   │   │   │   │   │   │   │
