@@ -1,6 +1,10 @@
 package position
 
-import "testing"
+import (
+	"testing"
+
+	. "github.com/maaslalani/gambit/squares"
+)
 
 func TestPosition(t *testing.T) {
 	tt := []struct {
@@ -8,14 +12,14 @@ func TestPosition(t *testing.T) {
 		row int
 		col int
 	}{
-		{"A8", 7, 0},
-		{"B7", 6, 1},
-		{"C6", 5, 2},
-		{"D5", 4, 3},
-		{"E4", 3, 4},
-		{"F3", 2, 5},
-		{"G2", 1, 6},
-		{"H1", 0, 7},
+		{A8, 7, 0},
+		{B7, 6, 1},
+		{C6, 5, 2},
+		{D5, 4, 3},
+		{E4, 3, 4},
+		{F3, 2, 5},
+		{G2, 1, 6},
+		{H1, 0, 7},
 	}
 
 	for i, tc := range tt {
