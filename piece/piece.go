@@ -5,6 +5,14 @@ import (
 )
 
 type Piece struct {
-	Color color.Color
 	Type  Type
+	Color color.Color
+}
+
+func Empty() Piece {
+	return Piece{None, color.None}
+}
+
+func (p Piece) String() string {
+	return Display[p.Type]
 }

@@ -9,4 +9,15 @@ const (
 	Rook   Type = "R"
 	Queen  Type = "Q"
 	King   Type = "K"
+	None   Type = " "
 )
+
+var Display = map[Type]string{
+	Bishop: "♝",
+	King:   "♚",
+	Knight: "♞",
+	Pawn:   "♟",
+	Queen:  "♛",
+	Rook:   "♜",
+	None:   " ",
+}
