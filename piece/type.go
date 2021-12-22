@@ -9,7 +9,7 @@ const (
 	Rook   Type = "R"
 	Queen  Type = "Q"
 	King   Type = "K"
-	None   Type = " "
+	NoType Type = " "
 )
 
 var Display = map[Type]string{
@@ -19,5 +19,5 @@ var Display = map[Type]string{
 	Pawn:   "♟",
 	Queen:  "♛",
 	Rook:   "♜",
-	None:   " ",
+	NoType: " ",
 }

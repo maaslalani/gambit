@@ -10,7 +10,7 @@ type Piece struct {
 }
 
 func Empty() Piece {
-	return Piece{None, color.None}
+	return Piece{NoType, color.NoColor}
 }
 
 func (p Piece) String() string {
