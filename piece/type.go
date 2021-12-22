@@ -2,6 +2,10 @@ package piece
 
 type Type string
 
+func (t Type) String() string {
+	return string(t)
+}
+
 const (
 	Pawn   Type = "P"
 	Knight Type = "N"

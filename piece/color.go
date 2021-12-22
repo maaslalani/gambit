@@ -1,9 +1,9 @@
 package piece
 
-type Color int
+type Color string
 
 const (
-	White   Color = 0
-	Black   Color = 1
-	NoColor Color = -1
+	White   Color = "w"
+	Black   Color = "b"
+	NoColor Color = " "
 )

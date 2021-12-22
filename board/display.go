@@ -44,7 +44,7 @@ func (b Board) String() string {
 			s += buildRow(border[top]) + "\n"
 		}
 
-		for c, cell := range b.grid[row] {
+		for c, cell := range b.Grid[row] {
 			// Rank labels
 			if isFirstColumn(c) {
 				s += " " + position.RowToRank(row) + "  "
