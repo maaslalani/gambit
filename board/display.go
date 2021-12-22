@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/maaslalani/gambit/position"
+	"github.com/maaslalani/gambit/style"
 )
 
 const (
@@ -47,7 +48,7 @@ func (b Board) String() string {
 		for c, cell := range b.Grid[row] {
 			// Rank labels
 			if isFirstColumn(c) {
-				s += " " + position.RowToRank(row) + "  "
+				s += " " + style.Faint.Render(position.RowToRank(row)) + "  "
 			}
 
 			s += vertical + " " + cell.String() + " "
@@ -62,7 +63,7 @@ func (b Board) String() string {
 		} else {
 			s += buildRow(border[bottom]) + "\n"
 			// File labels
-			s += "      " + strings.Join(files, "   ") + "\n"
+			s += "      " + style.Faint.Render(strings.Join(files, "   ")) + "\n"
 		}
 	}
 

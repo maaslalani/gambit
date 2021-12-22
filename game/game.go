@@ -37,6 +37,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		col := (msg.X - marginLeft) / cellWidth
 		row := (msg.Y - marginTop) / cellHeight
 
+		if col < 0 || col > 7 || row < 0 || row > 7 {
+			return m, nil
+		}
+
 		if !m.board.Reversed {
 			row = 7 - row
 		}

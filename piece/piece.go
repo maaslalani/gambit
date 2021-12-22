@@ -1,5 +1,7 @@
 package piece
 
+import "github.com/maaslalani/gambit/style"
+
 type Piece struct {
 	Type  Type
 	Color Color
@@ -10,7 +12,11 @@ func Empty() Piece {
 }
 
 func (p Piece) String() string {
-	return Display[p.Type]
+	if p.Color == White {
+		return style.White.Render(Display[p.Type])
+	} else {
+		return style.Black.Render(Display[p.Type])
+	}
 }
 
 var (
