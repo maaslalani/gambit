@@ -24,8 +24,6 @@ var (
 	ranks = []int{7, 6, 5, 4, 3, 2, 1, 0}
 )
 
-type Ranks []int
-
 func (b Board) String() string {
 	var s string
 	if b.reversed {
@@ -45,12 +43,12 @@ func (b Board) String() string {
 				s += vertical
 			}
 		}
-		if r == len(b.grid)-1 {
-			s += buildRow(border[6], border[7], border[8])
-			s += "\n      "
-			s += strings.Join(files, "   ")
-		} else {
+		if r < len(b.grid)-1 {
 			s += buildRow(border[3], border[4], border[5])
+		} else {
+			s += buildRow(border[6], border[7], border[8])
+			s += "\n  " + marginLeft
+			s += strings.Join(files, "   ")
 		}
 		s += "\n"
 	}
