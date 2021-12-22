@@ -3,6 +3,8 @@ package position
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/maaslalani/gambit/squares"
 )
 
 // Position represents a position on the board
@@ -23,7 +25,7 @@ func (p Position) String() string {
 
 // ToPosition reads a rank and file number and returns the corresponding
 // position on the board's grid
-func ToPosition(s string) Position {
+func ToPosition(s squares.Square) Position {
 	return Position{RankToRow(s[1]), FileToColumn(s[0])}
 }
 

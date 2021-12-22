@@ -8,7 +8,7 @@ import (
 
 func TestPosition(t *testing.T) {
 	tt := []struct {
-		s   string
+		s   Square
 		row int
 		col int
 	}{
@@ -24,7 +24,7 @@ func TestPosition(t *testing.T) {
 
 	for i, tc := range tt {
 		p := Position{tc.row, tc.col}
-		if p.String() != tc.s {
+		if p.String() != string(tc.s) {
 			t.Errorf("Test %d: expected %s, got %s", i, tc.s, p.String())
 		}
 	}
