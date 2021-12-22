@@ -1,18 +1,23 @@
 package board
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/maaslalani/gambit/position"
 )
 
-var (
-	border = []string{"┌", "┬", "┐", "├", "┼", "┤", "└", "┴", "┘"}
+const (
+	top int = iota
+	middle
+	bottom
+)
 
-	borderBottomOffset = 6
-	borderMiddleOffset = 3
-	borderTopOffset    = 0
+var (
+	border = map[int][]rune{
+		top:    []rune("┌┬┐"),
+		middle: []rune("├┼┤"),
+		bottom: []rune("└┴┘"),
+	}
 
 	files = []string{"A", "B", "C", "D", "E", "F", "G", "H"}
 	ranks = []int{7, 6, 5, 4, 3, 2, 1, 0}
@@ -21,7 +26,6 @@ var (
 const (
 	vertical   = "│"
 	horizontal = "─"
-	marginLeft = "    "
 )
 
 // String prints the board in a human readable format.
@@ -37,15 +41,16 @@ func (b Board) String() string {
 	for r, row := range ranks {
 
 		if isFirstRow(r) {
-			s += buildRow(borderTopOffset) + "\n"
+			s += buildRow(border[top]) + "\n"
 		}
 
 		for c, cell := range b.grid[row] {
+			// Rank labels
 			if isFirstColumn(c) {
-				s += fmt.Sprintf(" %d  ", position.RowToRank(row))
+				s += " " + position.RowToRank(row) + "  "
 			}
 
-			s += fmt.Sprintf("%s %s ", vertical, cell)
+			s += vertical + " " + cell.String() + " "
 
 			if isLastColumn(c) {
 				s += vertical
@@ -53,13 +58,12 @@ func (b Board) String() string {
 		}
 
 		if !isLastRow(r) {
-			s += buildRow(borderMiddleOffset)
+			s += buildRow(border[middle]) + "\n"
 		} else {
-			s += buildRow(borderBottomOffset)
-			s += "\n      "
-			s += strings.Join(files, "   ")
+			s += buildRow(border[bottom]) + "\n"
+			// File labels
+			s += "      " + strings.Join(files, "   ") + "\n"
 		}
-		s += "\n"
 	}
 
 	return s
@@ -90,15 +94,14 @@ func isFirstColumn(i int) bool {
 // buildRow builds a row string based on the given borders for the left and
 // right side and correctly pads the middle with the given character adjusted
 // to the number of rows on the board.
-func buildRow(borderOffset int) string {
-	var left, middle, right = border[borderOffset], border[borderOffset+1], border[borderOffset+2]
-	var row []string
-	row = append(row, left)
-	for i := 0; i < len(ranks)-1; i++ {
-		row = append(row, middle)
+func buildRow(border []rune) string {
+	var row [9]string
+	row[0] = string(border[0])
+	row[8] = string(border[2])
+	for i := 1; i < len(ranks); i++ {
+		row[i] = string(border[1])
 	}
-	row = append(row, right)
-	return fmt.Sprintf("\n    %s", strings.Join(row, horizontal+horizontal+horizontal))
+	return "\n    " + strings.Join(row[:], strings.Repeat(horizontal, 3))
 }
 
 // reverse reverses the given slice of ints.
