@@ -1,4 +1,4 @@
-package color
+package piece
 
 type Color int
 

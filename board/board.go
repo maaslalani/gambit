@@ -11,9 +11,9 @@ type Board struct {
 	reversed bool
 }
 
-func NewBoard() Board {
+func New() Board {
 	grid := [8][8]piece.Piece{
-		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
+		{piece.Piece{Type: piece.King, Color: piece.White}, piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
 		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
 		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},
 		{piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty(), piece.Empty()},

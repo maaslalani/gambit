@@ -5,7 +5,7 @@ import (
 )
 
 func TestDisplay(t *testing.T) {
-	b := NewBoard()
+	b := New()
 	expected := `
     ┌───┬───┬───┬───┬───┬───┬───┬───┐
  8  │   │   │   │   │   │   │   │   │
@@ -33,7 +33,7 @@ func TestDisplay(t *testing.T) {
 }
 
 func TestDisplayReversed(t *testing.T) {
-	b := NewBoard()
+	b := New()
 	b.reversed = true
 	expected := `
     ┌───┬───┬───┬───┬───┬───┬───┬───┐
