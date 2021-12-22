@@ -1,7 +1,5 @@
 package piece
 
-import "strings"
-
 type Piece struct {
 	Type  Type
 	Color Color
@@ -13,18 +11,6 @@ func Empty() Piece {
 
 func (p Piece) String() string {
 	return Display[p.Type]
-}
-
-func (p Piece) Fen() string {
-	if p.Color == NoColor {
-		return ""
-	}
-
-	if p.Color == Black {
-		return strings.ToLower(string(p.Type))
-	}
-
-	return string(p.Type)
 }
 
 var (

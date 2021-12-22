@@ -1,11 +1,14 @@
 package board
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 
 	"github.com/maaslalani/gambit/piece"
 )
+
+var ErrInvalidFEN = errors.New("Invalid FEN")
 
 func (b Board) ToFen() string {
 	var sb strings.Builder
@@ -30,7 +33,7 @@ func (b Board) ToFen() string {
 			}
 
 			// Display the piece's Fen representation
-			sb.WriteString(p.Fen())
+			sb.WriteString(p.ToFen())
 		}
 
 		// If we have reached the end of the rank and we have encountered
@@ -44,7 +47,7 @@ func (b Board) ToFen() string {
 		}
 	}
 
-	sb.WriteString(" w ")
+	sb.WriteString(" " + string(b.Turn) + " ")
 	// TODO: Add castling
 	sb.WriteString("KQkq")
 	sb.WriteString(" - ")
@@ -53,5 +56,32 @@ func (b Board) ToFen() string {
 }
 
 func FromFen(fen string) (Board, error) {
-	return Board{}, nil
+	var b Board
+
+	parts := strings.Split(fen, " ")
+	if len(parts) != 6 {
+		return b, ErrInvalidFEN
+	}
+
+	b.Turn = piece.Color(parts[1])
+
+	ranks := strings.Split(parts[0], "/")
+
+	for r, rank := range ranks {
+		for c, char := range rank {
+			// Empty squares, append n empty pieces into the board
+			if char >= '1' && char <= '8' {
+				n := int(char - '0')
+				for i := 0; i < n; i++ {
+					b.Grid[7-r][c+i] = piece.Empty()
+				}
+				continue
+			}
+
+			p := piece.FromFen(string(char))
+			b.Grid[7-r][c] = p
+		}
+	}
+
+	return b, nil
 }
