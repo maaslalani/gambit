@@ -3,6 +3,7 @@ package game
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/maaslalani/gambit/board"
+	"github.com/maaslalani/gambit/piece"
 	"github.com/maaslalani/gambit/position"
 	. "github.com/maaslalani/gambit/squares"
 )
@@ -38,6 +39,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		row := (msg.Y - marginTop) / cellHeight
 
 		if col < 0 || col > 7 || row < 0 || row > 7 {
+			m.selected = position.NoPosition
 			return m, nil
 		}
 
@@ -45,15 +47,34 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			row = 7 - row
 		}
 
-		if msg.Type == tea.MouseRelease {
+		if msg.Type != tea.MouseRelease {
 			return m, nil
 		}
 
 		if m.selected == position.NoPosition {
-			m.selected = position.Position{Row: row, Col: col}
+			pos := position.Position{Row: row, Col: col}
+			if m.board.At(pos) == piece.EmptyPiece {
+				return m, nil
+			}
+			m.selected = pos
 		} else {
 			from := Square(m.selected.String())
-			to := Square(position.Position{Row: row, Col: col}.String())
+			toPos := position.Position{Row: row, Col: col}
+			to := Square(toPos.String())
+
+			// Don't allow moving to the same square
+			if from == to {
+				return m, nil
+			}
+
+			// Don't allow moving to a square with a piece of the same
+			// color as the selected piece
+			if m.board.At(m.selected).Color == m.board.At(toPos).Color {
+				m.selected = toPos
+				return m, nil
+			}
+
+			// Valid move
 			move := board.Move{From: from, To: to}
 			m.moves = append(m.moves, move)
 			m.board.Move(move)

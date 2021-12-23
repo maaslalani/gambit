@@ -38,3 +38,4 @@ var (
 )
 
 var OO = Piece{NoType, NoColor}
+var EmptyPiece = Piece{NoType, NoColor}

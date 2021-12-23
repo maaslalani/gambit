@@ -2,6 +2,7 @@ package board
 
 import (
 	"github.com/maaslalani/gambit/piece"
+	"github.com/maaslalani/gambit/position"
 )
 
 type Board struct {
@@ -19,4 +20,8 @@ func New() Board {
 		Grid: [8][8]piece.Piece{er, er, er, er, er, er, er, er},
 		Turn: piece.White,
 	}
+}
+
+func (b *Board) At(p position.Position) piece.Piece {
+	return b.Grid[p.Row][p.Col]
 }
