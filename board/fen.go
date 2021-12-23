@@ -1,15 +1,73 @@
 package board
 
 import (
-	"errors"
 	"strconv"
 	"strings"
 
 	"github.com/maaslalani/gambit/piece"
 )
 
-var ErrInvalidFEN = errors.New("Invalid FEN")
+// FromFen parses a FEN string and returns a Board with the corresponding
+// attributes and pieces
+func FromFen(fen string) (Board, error) {
+	var b Board = New()
 
+	// Split the FEN string into its component parts
+	parts := strings.Split(fen, " ")
+
+	// 1. Piece placement (from White's perspective). Each rank
+	// is described, starting with rank 8 and ending with rank 1;
+	// within each rank, the contents of each square are described
+	// from file "a" through file "h". Following the Standard
+	// Algebraic Notation (SAN), each piece is identified by a
+	// single letter taken from the standard English names (pawn =
+	// "P", knight = "N", bishop = "B", rook = "R", queen = "Q" and
+	// king = "K"). White pieces are designated using upper-case
+	// letters ("PNBRQK") while black pieces use lowercase
+	// ("pnbrqk"). Empty squares are noted using digits 1 through 8
+	// (the number of empty squares), and "/" separates ranks.
+	ranks := strings.Split(parts[0], "/")
+	for r, rank := range ranks {
+		col := 0
+		for _, char := range rank {
+			if char >= '1' && char <= '8' {
+				col += int(char - '0')
+				continue
+			}
+			p := piece.FromFen(string(char))
+			b.Grid[7-r][col] = p
+			col += 1
+		}
+	}
+
+	// 2. Active color.
+	// "w" means White moves next, "b" means Black moves next.
+	b.Turn = piece.Color(parts[1])
+
+	// 3. Castling availability.
+	// If neither side can castle, this is "-". Otherwise, this has one or more
+	// letters: "K" (White can castle kingside), "Q" (White can castle queenside),
+	// "k" (Black can castle kingside), and/or "q" (Black can castle queenside). A
+	// move that temporarily prevents castling does not negate this notation.
+
+	// 4. En passant target square in algebraic notation.
+	// If there's no en passant target square, this is "-". If a pawn has just
+	// made a two-square move, this is the position "behind" the pawn. This is
+	// recorded regardless of whether there is a pawn in position to make an en
+	// passant capture.
+
+	// 5. Halfmove clock.
+	// The number of halfmoves since the last capture or pawn advance, used for
+	// the fifty-move rule.
+
+	// 6. Fullmove number.
+	// The number of the full move. It starts at 1, and is incremented after
+	// Black's move.
+
+	return b, nil
+}
+
+// ToFen converts a board into a FEN string
 func (b Board) ToFen() string {
 	var sb strings.Builder
 	// Loop through the entire board and build the FEN string for each rank
@@ -50,43 +108,14 @@ func (b Board) ToFen() string {
 	}
 
 	sb.WriteString(" " + string(b.Turn) + " ")
+
 	// TODO: Add castling
 	sb.WriteString("KQkq")
+
+	// TODO: Add En passant target squares
 	sb.WriteString(" - ")
+
+	// TODO: Add halfmove + fullmove clock
 	sb.WriteString("0 1")
 	return sb.String()
-}
-
-func FromFen(fen string) (Board, error) {
-	var b Board = New()
-
-	parts := strings.Split(fen, " ")
-	if len(parts) != 6 {
-		return b, ErrInvalidFEN
-	}
-
-	b.Turn = piece.Color(parts[1])
-
-	ranks := strings.Split(parts[0], "/")
-
-	for r, rank := range ranks {
-		col := 0
-		for _, char := range rank {
-			// Empty squares, append n empty pieces into the board
-			if char >= '1' && char <= '8' {
-				n := int(char - '0')
-				for i := 0; i < n; i++ {
-					b.Grid[7-r][col] = piece.Empty()
-					col += 1
-				}
-				continue
-			}
-
-			p := piece.FromFen(string(char))
-			b.Grid[7-r][col] = p
-			col += 1
-		}
-	}
-
-	return b, nil
 }
