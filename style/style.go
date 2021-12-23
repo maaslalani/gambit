@@ -1,9 +1,12 @@
 package style
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	. "github.com/charmbracelet/lipgloss"
+)
 
 var (
-	Faint = lipgloss.NewStyle().Foreground(lipgloss.Color("8"))
-	White = lipgloss.NewStyle().Foreground(lipgloss.Color("7"))
-	Black = lipgloss.NewStyle().Foreground(lipgloss.Color("4"))
+	Faint    = NewStyle().Foreground(Color("8"))
+	White    = NewStyle().Foreground(Color("7"))
+	Black    = NewStyle().Foreground(Color("4"))
+	Selected = NewStyle().Foreground(Color("2"))
 )

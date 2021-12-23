@@ -9,16 +9,14 @@ import (
 )
 
 type model struct {
-	board    board.Board
-	selected position.Position
-	moves    []board.Move
+	board board.Board
+	moves []board.Move
 }
 
 func Model() tea.Model {
 	b, _ := board.FromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	return model{
-		board:    b,
-		selected: position.NoPosition,
+		board: b,
 	}
 }
 
@@ -30,6 +28,9 @@ const (
 	cellWidth  = 4
 	marginLeft = 4
 	marginTop  = 2
+
+	maxCol = 7
+	maxRow = 7
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -38,27 +39,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		col := (msg.X - marginLeft) / cellWidth
 		row := (msg.Y - marginTop) / cellHeight
 
-		if col < 0 || col > 7 || row < 0 || row > 7 {
-			m.selected = position.NoPosition
+		if col < 0 || col > maxCol || row < 0 || row > maxRow {
+			m.board.Selected = position.NoPosition
 			return m, nil
 		}
 
 		if !m.board.Reversed {
-			row = 7 - row
+			row = maxRow - row
 		}
 
 		if msg.Type != tea.MouseRelease {
 			return m, nil
 		}
 
-		if m.selected == position.NoPosition {
+		if m.board.Selected == position.NoPosition {
 			pos := position.Position{Row: row, Col: col}
 			if m.board.At(pos) == piece.EmptyPiece {
 				return m, nil
 			}
-			m.selected = pos
+			m.board.Selected = pos
 		} else {
-			from := Square(m.selected.String())
+			from := Square(m.board.Selected.String())
 			toPos := position.Position{Row: row, Col: col}
 			to := Square(toPos.String())
 
@@ -69,8 +70,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			// Don't allow moving to a square with a piece of the same
 			// color as the selected piece
-			if m.board.At(m.selected).Color == m.board.At(toPos).Color {
-				m.selected = toPos
+			if m.board.At(m.board.Selected).Color == m.board.At(toPos).Color {
+				m.board.Selected = toPos
 				return m, nil
 			}
 
@@ -78,7 +79,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			move := board.Move{From: from, To: to}
 			m.moves = append(m.moves, move)
 			m.board.Move(move)
-			m.selected = position.NoPosition
+			m.board.Selected = position.NoPosition
 		}
 	case tea.KeyMsg:
 		switch msg.String() {

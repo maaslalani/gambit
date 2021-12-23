@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/maaslalani/gambit/piece"
+	"github.com/maaslalani/gambit/position"
 )
 
 var ErrInvalidFEN = errors.New("Invalid FEN")
@@ -59,6 +60,7 @@ func (b Board) ToFen() string {
 
 func FromFen(fen string) (Board, error) {
 	var b Board
+	b.Selected = position.NoPosition
 
 	parts := strings.Split(fen, " ")
 	if len(parts) != 6 {

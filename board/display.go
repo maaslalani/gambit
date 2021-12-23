@@ -51,7 +51,12 @@ func (b Board) String() string {
 				s += " " + style.Faint.Render(position.RowToRank(row)) + "  "
 			}
 
-			s += vertical + " " + cell.String() + " "
+			s += vertical + " "
+			cellStyle := cell.Style()
+			if b.Selected != position.NoPosition && row == b.Selected.Row && c == b.Selected.Col {
+				cellStyle = style.Selected
+			}
+			s += cellStyle.Render(cell.String()) + " "
 
 			if isLastColumn(c) {
 				s += vertical

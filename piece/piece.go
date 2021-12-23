@@ -1,6 +1,9 @@
 package piece
 
-import "github.com/maaslalani/gambit/style"
+import (
+	"github.com/charmbracelet/lipgloss"
+	"github.com/maaslalani/gambit/style"
+)
 
 type Piece struct {
 	Type  Type
@@ -12,10 +15,14 @@ func Empty() Piece {
 }
 
 func (p Piece) String() string {
+	return Display[p.Type]
+}
+
+func (p Piece) Style() lipgloss.Style {
 	if p.Color == White {
-		return style.White.Render(Display[p.Type])
+		return style.White
 	} else {
-		return style.Black.Render(Display[p.Type])
+		return style.Black
 	}
 }
 
