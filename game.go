@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -23,27 +24,34 @@ func (m model) Init() tea.Cmd { return nil }
 
 func (m model) View() string {
 	var s strings.Builder
-	ranks := strings.Split(strings.Split(m.board.ToFen(), " ")[0], "/")
+
+	fen := m.board.ToFen()
+	board := strings.Split(fen, " ")[0]
+	ranks := strings.Split(board, "/")
+
 	for r, rank := range ranks {
-		if r == 0 {
-			s.WriteString("   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n")
+		if r == firstRow {
+			s.WriteString(topBorder())
 		}
+
 		for c, cell := range rank {
-			if c == 0 {
-				s.WriteString(fmt.Sprintf(" %d │", r))
+			if c == firstCol {
+				label := fmt.Sprintf(" %d ", lastRow-r+1)
+				s.WriteString(Faint.Render(label) + vertical)
 			}
-			if cell >= '1' && cell <= '8' {
-				s.WriteString(strings.Repeat("   │", int(cell-'0')))
+
+			if isNumeric(cell) {
+				s.WriteString(strings.Repeat("   "+vertical, runeToInt(cell)))
 			} else {
-				s.WriteString(" " + Display[string(cell)] + " │")
+				s.WriteString(" " + Display[string(cell)] + " " + vertical)
 			}
 		}
 		s.WriteRune('\n')
-		if r == 7 {
-			s.WriteString("   └───┴───┴───┴───┴───┴───┴───┴───┘\n")
-			s.WriteString("     A   B   C   D   E   F   G   H\n")
+
+		if r != lastRow {
+			s.WriteString(middleBorder())
 		} else {
-			s.WriteString("   ├───┼───┼───┼───┼───┼───┼───┼───┤\n")
+			s.WriteString(bottomBorder() + Faint.Render(bottomLabels()))
 		}
 	}
 	return s.String()
@@ -55,7 +63,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case " ":
-			move := m.board.GenerateLegalMoves()[0]
+			moves := m.board.GenerateLegalMoves()
+			move := moves[rand.Intn(len(moves))]
 			m.board.Apply(move)
 		case "ctrl+c", "q":
 			return m, tea.Quit
@@ -63,4 +72,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, nil
+}
+
+// isNumeric returns true if the current rune is a number
+func isNumeric(r rune) bool {
+	return r >= '0' && r <= '9'
+}
+
+// runeToInt converts a rune to an int
+func runeToInt(r rune) int {
+	return int(r - '0')
 }
