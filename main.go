@@ -4,11 +4,12 @@ import (
 	"log"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/maaslalani/gambit/game"
 )
 
 func main() {
 	p := tea.NewProgram(
-		Model(),
+		game.Model(),
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)
