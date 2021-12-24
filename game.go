@@ -11,6 +11,7 @@ import (
 	"github.com/maaslalani/gambit/border"
 	"github.com/maaslalani/gambit/pieces"
 	"github.com/maaslalani/gambit/position"
+	"github.com/maaslalani/gambit/style"
 )
 
 type model struct {
@@ -47,7 +48,7 @@ func (m model) View() string {
 		for c, cell := range rank {
 			if c == board.FirstCol {
 				label := fmt.Sprintf(" %d ", board.LastRow-r+1)
-				s.WriteString(Faint.Render(label) + border.Vertical)
+				s.WriteString(style.Faint.Render(label) + border.Vertical)
 			}
 
 			if isNumeric(cell) {
@@ -56,7 +57,7 @@ func (m model) View() string {
 					// Loop through all piece legal moves and see if this square matches any
 					for _, move := range m.legalPieceMoves {
 						if strings.HasSuffix(move.String(), position.ToSquare(board.LastRow-r, count)) {
-							display = Cyan.Render(" . ")
+							display = style.Cyan.Render(" . ")
 							break
 						}
 					}
@@ -64,19 +65,19 @@ func (m model) View() string {
 					count += 1
 				}
 			} else {
-				var style lipgloss.Style
+				var st lipgloss.Style
 				if m.selected == position.ToSquare(board.LastRow-r, count) {
-					style = Selected
+					st = style.Selected
 				} else {
-					style = lipgloss.NewStyle()
+					st = lipgloss.NewStyle()
 					for _, move := range m.legalPieceMoves {
 						if strings.HasSuffix(move.String(), position.ToSquare(board.LastRow-r, count)) {
-							style = Red
+							st = style.Red
 							break
 						}
 					}
 				}
-				s.WriteString(" " + style.Render(pieces.Display[string(cell)]) + " " + border.Vertical)
+				s.WriteString(" " + st.Render(pieces.Display[string(cell)]) + " " + border.Vertical)
 				count += 1
 			}
 		}
@@ -85,7 +86,7 @@ func (m model) View() string {
 		if r != board.LastRow {
 			s.WriteString(border.Middle())
 		} else {
-			s.WriteString(border.Bottom() + Faint.Render(border.BottomLabels()))
+			s.WriteString(border.Bottom() + style.Faint.Render(border.BottomLabels()))
 		}
 	}
 	s.WriteRune('\n')
