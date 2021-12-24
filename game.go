@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	dt "github.com/dylhunn/dragontoothmg"
 )
 
@@ -38,6 +39,7 @@ func (m model) View() string {
 			s.WriteString(topBorder())
 		}
 
+		count := 0
 		for c, cell := range rank {
 			if c == firstCol {
 				label := fmt.Sprintf(" %d ", lastRow-r+1)
@@ -49,19 +51,29 @@ func (m model) View() string {
 					display := "   "
 					// Loop through all piece legal moves and see if this square matches any
 					for _, move := range m.legalPieceMoves {
-						if strings.HasSuffix(move.String(), PositionToSquare(lastRow-r, c+i)) {
+						if strings.HasSuffix(move.String(), PositionToSquare(lastRow-r, count)) {
 							display = Red.Render(" . ")
 							break
 						}
 					}
 					s.WriteString(display + vertical)
+					count += 1
 				}
 			} else {
-				if m.selected == PositionToSquare(lastRow-r, c) {
-					s.WriteString(" " + Selected.Render(Display[string(cell)]) + " " + vertical)
+				var style lipgloss.Style
+				if m.selected == PositionToSquare(lastRow-r, count) {
+					style = Selected
 				} else {
-					s.WriteString(" " + Display[string(cell)] + " " + vertical)
+					style = lipgloss.NewStyle()
+					for _, move := range m.legalPieceMoves {
+						if strings.HasSuffix(move.String(), PositionToSquare(lastRow-r, count)) {
+							style = Red
+							break
+						}
+					}
 				}
+				s.WriteString(" " + style.Render(Display[string(cell)]) + " " + vertical)
+				count += 1
 			}
 		}
 		s.WriteRune('\n')
