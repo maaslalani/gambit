@@ -1,11 +1,10 @@
-package game
+package main
 
 import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	dt "github.com/dylhunn/dragontoothmg"
-	"github.com/maaslalani/gambit/piece"
 )
 
 type model struct {
@@ -13,7 +12,7 @@ type model struct {
 }
 
 func Model() tea.Model {
-	board := dt.ParseFen("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1")
+	board := dt.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	return model{
 		board: board,
 	}
@@ -28,26 +27,16 @@ func (m model) View() string {
 		for _, c := range r {
 			if c >= '1' && c <= '8' {
 				for i := 0; i < int(c-'0'); i++ {
-					s.WriteString(piece.Display[""])
+					s.WriteString(Display[""])
 				}
 			} else {
-				s.WriteString(piece.Display[string(c)])
+				s.WriteString(Display[string(c)])
 			}
 		}
 		s.WriteRune('\n')
 	}
 	return s.String()
 }
-
-const (
-	cellHeight = 2
-	cellWidth  = 4
-	marginLeft = 4
-	marginTop  = 2
-
-	maxCol = 7
-	maxRow = 7
-)
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
