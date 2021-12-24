@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -23,17 +24,27 @@ func (m model) Init() tea.Cmd { return nil }
 func (m model) View() string {
 	var s strings.Builder
 	ranks := strings.Split(strings.Split(m.board.ToFen(), " ")[0], "/")
-	for _, r := range ranks {
-		for _, c := range r {
-			if c >= '1' && c <= '8' {
-				for i := 0; i < int(c-'0'); i++ {
-					s.WriteString(Display[""])
-				}
+	for r, rank := range ranks {
+		if r == 0 {
+			s.WriteString("   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n")
+		}
+		for c, cell := range rank {
+			if c == 0 {
+				s.WriteString(fmt.Sprintf(" %d │", r))
+			}
+			if cell >= '1' && cell <= '8' {
+				s.WriteString(strings.Repeat("   │", int(cell-'0')))
 			} else {
-				s.WriteString(Display[string(c)])
+				s.WriteString(" " + Display[string(cell)] + " │")
 			}
 		}
 		s.WriteRune('\n')
+		if r == 7 {
+			s.WriteString("   └───┴───┴───┴───┴───┴───┴───┴───┘\n")
+			s.WriteString("     A   B   C   D   E   F   G   H\n")
+		} else {
+			s.WriteString("   ├───┼───┼───┼───┼───┼───┼───┼───┤\n")
+		}
 	}
 	return s.String()
 }
