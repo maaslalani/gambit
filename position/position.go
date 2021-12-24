@@ -7,6 +7,7 @@ import (
 	"github.com/maaslalani/gambit/board"
 )
 
+// colToFile returns the File given a column
 func colToFile(col int) string {
 	if col < board.FirstCol {
 		col = board.FirstCol
@@ -16,6 +17,7 @@ func colToFile(col int) string {
 	return fmt.Sprintf("%c", col+'a')
 }
 
+// rowToRank returns a Rank given a row
 func rowToRank(row int) int {
 	if row < board.FirstRow {
 		row = board.FirstRow
@@ -25,6 +27,10 @@ func rowToRank(row int) int {
 	return row + 1
 }
 
+// ToSquare returns the square position of a given row and
+// column for display or checking legal moves.
+//
+// For example, ToSquare(0, 0) returns a1.
 func ToSquare(row, col int) string {
 	return colToFile(col) + strconv.Itoa(rowToRank(row))
 }

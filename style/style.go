@@ -2,11 +2,11 @@ package style
 
 import . "github.com/charmbracelet/lipgloss"
 
-func foreground(color string) Style {
+func fg(color string) Style {
 	return NewStyle().Foreground(Color(color))
 }
 
-var Cyan = foreground("5")
-var Faint = foreground("8")
-var Red = foreground("1")
-var Selected = foreground("6")
+var Cyan = fg("5")
+var Faint = fg("8")
+var Red = fg("1")
+var Selected = fg("6")

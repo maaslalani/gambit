@@ -84,11 +84,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		col, row := border.Cell(msg.X, msg.Y)
+		selected := border.Cell(msg.X, msg.Y)
 
 		if m.selected != "" {
 			from := m.selected
-			to := fmt.Sprintf("%s", position.ToSquare(row, col))
+			to := selected
 
 			for _, move := range m.moves {
 				if move.String() == from+to {
@@ -113,7 +113,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		} else {
-			m.selected = fmt.Sprintf("%s", position.ToSquare(row, col))
+			m.selected = selected
 			m.pieceMoves = []dt.Move{}
 			for _, move := range m.moves {
 				if strings.HasPrefix(move.String(), m.selected) {
