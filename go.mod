@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/containerd/console v1.0.2 // indirect
+	github.com/dylhunn/dragontoothmg v0.0.0-20170905201839-b0146de1e275 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
