@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	dt "github.com/dylhunn/dragontoothmg"
 	"github.com/maaslalani/gambit/board"
+	"github.com/maaslalani/gambit/border"
 	"github.com/maaslalani/gambit/pieces"
 	"github.com/maaslalani/gambit/position"
 )
@@ -39,14 +40,14 @@ func (m model) View() string {
 
 	for r, rank := range ranks {
 		if r == board.FirstRow {
-			s.WriteString(topBorder())
+			s.WriteString(border.Top())
 		}
 
 		count := 0
 		for c, cell := range rank {
 			if c == board.FirstCol {
 				label := fmt.Sprintf(" %d ", board.LastRow-r+1)
-				s.WriteString(Faint.Render(label) + vertical)
+				s.WriteString(Faint.Render(label) + border.Vertical)
 			}
 
 			if isNumeric(cell) {
@@ -59,7 +60,7 @@ func (m model) View() string {
 							break
 						}
 					}
-					s.WriteString(display + vertical)
+					s.WriteString(display + border.Vertical)
 					count += 1
 				}
 			} else {
@@ -75,16 +76,16 @@ func (m model) View() string {
 						}
 					}
 				}
-				s.WriteString(" " + style.Render(pieces.Display[string(cell)]) + " " + vertical)
+				s.WriteString(" " + style.Render(pieces.Display[string(cell)]) + " " + border.Vertical)
 				count += 1
 			}
 		}
 		s.WriteRune('\n')
 
 		if r != board.LastRow {
-			s.WriteString(middleBorder())
+			s.WriteString(border.Middle())
 		} else {
-			s.WriteString(bottomBorder() + Faint.Render(bottomLabels()))
+			s.WriteString(border.Bottom() + Faint.Render(border.BottomLabels()))
 		}
 	}
 	s.WriteRune('\n')
@@ -99,8 +100,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		col := (msg.X - marginLeft) / cellWidth
-		row := board.LastRow - (msg.Y-marginTop)/cellHeight
+		col, row := border.Cell(msg.X, msg.Y)
 
 		if m.selected != "" {
 			from := m.selected
