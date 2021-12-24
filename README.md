@@ -8,19 +8,12 @@ Chess board in your terminal.
 </p>
 <br/>
 
-### Warning
-
-`gambit` does not have a large number of features at the
-moment. I plan on adding a chess engine, mouse support,
-timers, networked play, game replays, etc...
 
 ### Move
 
 You may use the mouse to move your pieces. You may also
 type out the square the piece you want to move is on
 followed by the square to which you want to move the piece.
-
-Like a real chess board, `gambit` supports illegal moves.
 
 ### Players
 
