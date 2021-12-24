@@ -10,13 +10,16 @@ import (
 )
 
 type model struct {
-	board dt.Board
+	board    dt.Board
+	moves    []dt.Move
+	selected string
 }
 
 func Model() tea.Model {
 	board := dt.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	return model{
 		board: board,
+		moves: []dt.Move{},
 	}
 }
 
@@ -54,16 +57,28 @@ func (m model) View() string {
 			s.WriteString(bottomBorder() + Faint.Render(bottomLabels()))
 		}
 	}
+
+	// Show legal moves
+	for _, move := range m.moves {
+		s.WriteString(move.String())
+	}
+
+	s.WriteString(m.selected)
+
 	return s.String()
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.MouseMsg:
+		col := (msg.X - marginLeft) / cellWidth
+		row := lastRow - (msg.Y-marginTop)/cellHeight
+		m.selected = fmt.Sprintf("%d,%d: %s", col, row, PositionToSquare(row, col))
 	case tea.KeyMsg:
 		switch msg.String() {
 		case " ":
 			moves := m.board.GenerateLegalMoves()
+			m.moves = moves
 			move := moves[rand.Intn(len(moves))]
 			m.board.Apply(move)
 		case "ctrl+c", "q":

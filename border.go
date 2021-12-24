@@ -9,11 +9,14 @@ const (
 	lastCol = 7
 	lastRow = 7
 
+	cellHeight = 2
+	cellWidth  = 4
+	marginLeft = 3
+	marginTop  = 1
+
 	vertical   = "│"
 	horizontal = "─"
 )
-
-const marginLeft = 3
 
 // withMarginLeft returns a string with a prepended left margin
 func withMarginLeft(s string) string {
