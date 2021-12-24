@@ -52,7 +52,7 @@ func (m model) View() string {
 					// Loop through all piece legal moves and see if this square matches any
 					for _, move := range m.legalPieceMoves {
 						if strings.HasSuffix(move.String(), PositionToSquare(lastRow-r, count)) {
-							display = Red.Render(" . ")
+							display = Cyan.Render(" . ")
 							break
 						}
 					}
