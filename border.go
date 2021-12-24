@@ -1,14 +1,12 @@
 package main
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/maaslalani/gambit/board"
+)
 
 const (
-	firstCol = 0
-	firstRow = 0
-
-	lastCol = 7
-	lastRow = 7
-
 	cellHeight = 2
 	cellWidth  = 4
 	marginLeft = 3
@@ -25,7 +23,7 @@ func withMarginLeft(s string) string {
 
 // buildBorder returns a string with a border for a given row (top, middle, bottom)
 func buildBorder(left, middle, right string) string {
-	border := left + horizontal + strings.Repeat(horizontal+horizontal+middle+horizontal, lastRow)
+	border := left + horizontal + strings.Repeat(horizontal+horizontal+middle+horizontal, board.LastRow)
 	border += horizontal + horizontal + right + "\n"
 	return withMarginLeft(border)
 }

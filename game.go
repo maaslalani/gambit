@@ -7,6 +7,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	dt "github.com/dylhunn/dragontoothmg"
+	"github.com/maaslalani/gambit/board"
+	"github.com/maaslalani/gambit/position"
 )
 
 type model struct {
@@ -31,18 +33,18 @@ func (m model) View() string {
 	var s strings.Builder
 
 	fen := m.board.ToFen()
-	board := strings.Split(fen, " ")[0]
-	ranks := strings.Split(board, "/")
+	rs := strings.Split(fen, " ")[0]
+	ranks := strings.Split(rs, "/")
 
 	for r, rank := range ranks {
-		if r == firstRow {
+		if r == board.FirstRow {
 			s.WriteString(topBorder())
 		}
 
 		count := 0
 		for c, cell := range rank {
-			if c == firstCol {
-				label := fmt.Sprintf(" %d ", lastRow-r+1)
+			if c == board.FirstCol {
+				label := fmt.Sprintf(" %d ", board.LastRow-r+1)
 				s.WriteString(Faint.Render(label) + vertical)
 			}
 
@@ -51,7 +53,7 @@ func (m model) View() string {
 					display := "   "
 					// Loop through all piece legal moves and see if this square matches any
 					for _, move := range m.legalPieceMoves {
-						if strings.HasSuffix(move.String(), PositionToSquare(lastRow-r, count)) {
+						if strings.HasSuffix(move.String(), position.ToSquare(board.LastRow-r, count)) {
 							display = Cyan.Render(" . ")
 							break
 						}
@@ -61,12 +63,12 @@ func (m model) View() string {
 				}
 			} else {
 				var style lipgloss.Style
-				if m.selected == PositionToSquare(lastRow-r, count) {
+				if m.selected == position.ToSquare(board.LastRow-r, count) {
 					style = Selected
 				} else {
 					style = lipgloss.NewStyle()
 					for _, move := range m.legalPieceMoves {
-						if strings.HasSuffix(move.String(), PositionToSquare(lastRow-r, count)) {
+						if strings.HasSuffix(move.String(), position.ToSquare(board.LastRow-r, count)) {
 							style = Red
 							break
 						}
@@ -78,7 +80,7 @@ func (m model) View() string {
 		}
 		s.WriteRune('\n')
 
-		if r != lastRow {
+		if r != board.LastRow {
 			s.WriteString(middleBorder())
 		} else {
 			s.WriteString(bottomBorder() + Faint.Render(bottomLabels()))
@@ -97,11 +99,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		col := (msg.X - marginLeft) / cellWidth
-		row := lastRow - (msg.Y-marginTop)/cellHeight
+		row := board.LastRow - (msg.Y-marginTop)/cellHeight
 
 		if m.selected != "" {
 			from := m.selected
-			to := fmt.Sprintf("%s", PositionToSquare(row, col))
+			to := fmt.Sprintf("%s", position.ToSquare(row, col))
 
 			for _, move := range m.legalMoves {
 				if move.String() == from+to {
@@ -126,7 +128,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		} else {
-			m.selected = fmt.Sprintf("%s", PositionToSquare(row, col))
+			m.selected = fmt.Sprintf("%s", position.ToSquare(row, col))
 			m.legalPieceMoves = []dt.Move{}
 			for _, move := range m.legalMoves {
 				if strings.HasPrefix(move.String(), m.selected) {
