@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -10,16 +9,18 @@ import (
 )
 
 type model struct {
-	board    dt.Board
-	moves    []dt.Move
-	selected string
+	board           *dt.Board
+	legalMoves      []dt.Move
+	legalPieceMoves []dt.Move
+	selected        string
 }
 
 func Model() tea.Model {
 	board := dt.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+	legalMoves := board.GenerateLegalMoves()
 	return model{
-		board: board,
-		moves: []dt.Move{},
+		board:      &board,
+		legalMoves: legalMoves,
 	}
 }
 
@@ -44,9 +45,23 @@ func (m model) View() string {
 			}
 
 			if isNumeric(cell) {
-				s.WriteString(strings.Repeat("   "+vertical, runeToInt(cell)))
+				for i := 0; i < runeToInt(cell); i++ {
+					display := "   "
+					// Loop through all piece legal moves and see if this square matches any
+					for _, move := range m.legalPieceMoves {
+						if strings.HasSuffix(move.String(), PositionToSquare(lastRow-r, c+i)) {
+							display = Red.Render(" . ")
+							break
+						}
+					}
+					s.WriteString(display + vertical)
+				}
 			} else {
-				s.WriteString(" " + Display[string(cell)] + " " + vertical)
+				if m.selected == PositionToSquare(lastRow-r, c) {
+					s.WriteString(" " + Selected.Render(Display[string(cell)]) + " " + vertical)
+				} else {
+					s.WriteString(" " + Display[string(cell)] + " " + vertical)
+				}
 			}
 		}
 		s.WriteRune('\n')
@@ -57,13 +72,7 @@ func (m model) View() string {
 			s.WriteString(bottomBorder() + Faint.Render(bottomLabels()))
 		}
 	}
-
-	// Show legal moves
-	for _, move := range m.moves {
-		s.WriteString(move.String())
-	}
-
-	s.WriteString(m.selected)
+	s.WriteRune('\n')
 
 	return s.String()
 }
@@ -71,16 +80,51 @@ func (m model) View() string {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.MouseMsg:
+		if msg.Type != tea.MouseLeft {
+			return m, nil
+		}
+
 		col := (msg.X - marginLeft) / cellWidth
 		row := lastRow - (msg.Y-marginTop)/cellHeight
-		m.selected = fmt.Sprintf("%d,%d: %s", col, row, PositionToSquare(row, col))
+
+		if m.selected != "" {
+			from := m.selected
+			to := fmt.Sprintf("%s", PositionToSquare(row, col))
+
+			for _, move := range m.legalMoves {
+				if move.String() == from+to {
+					// Perform move
+					m.board.Apply(move)
+					m.legalMoves = m.board.GenerateLegalMoves()
+
+					// Unselect piece
+					m.selected = ""
+					m.legalPieceMoves = []dt.Move{}
+
+					return m, nil
+				}
+			}
+
+			// We didn't encounter a valid move
+			m.selected = to
+			m.legalPieceMoves = []dt.Move{}
+			for _, move := range m.legalMoves {
+				if strings.HasPrefix(move.String(), m.selected) {
+					m.legalPieceMoves = append(m.legalPieceMoves, move)
+				}
+			}
+		} else {
+			m.selected = fmt.Sprintf("%s", PositionToSquare(row, col))
+			m.legalPieceMoves = []dt.Move{}
+			for _, move := range m.legalMoves {
+				if strings.HasPrefix(move.String(), m.selected) {
+					m.legalPieceMoves = append(m.legalPieceMoves, move)
+				}
+			}
+		}
+
 	case tea.KeyMsg:
 		switch msg.String() {
-		case " ":
-			moves := m.board.GenerateLegalMoves()
-			m.moves = moves
-			move := moves[rand.Intn(len(moves))]
-			m.board.Apply(move)
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		}
