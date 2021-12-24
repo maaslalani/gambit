@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	dt "github.com/dylhunn/dragontoothmg"
 	"github.com/maaslalani/gambit/board"
+	"github.com/maaslalani/gambit/pieces"
 	"github.com/maaslalani/gambit/position"
 )
 
@@ -74,7 +75,7 @@ func (m model) View() string {
 						}
 					}
 				}
-				s.WriteString(" " + style.Render(Display[string(cell)]) + " " + vertical)
+				s.WriteString(" " + style.Render(pieces.Display[string(cell)]) + " " + vertical)
 				count += 1
 			}
 		}

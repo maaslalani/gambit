@@ -1,4 +1,4 @@
-package main
+package pieces
 
 var Display = map[string]string{
 	"":  " ",
