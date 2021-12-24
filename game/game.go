@@ -6,6 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	dt "github.com/dylhunn/dragontoothmg"
+
 	"github.com/maaslalani/gambit/board"
 	"github.com/maaslalani/gambit/border"
 	"github.com/maaslalani/gambit/fen"
@@ -65,8 +66,8 @@ func (m model) View() string {
 			}
 			s.WriteString(display + border.Vertical)
 		}
-
 		s.WriteString("\n")
+
 		if r != board.LastRow {
 			s.WriteString(border.Middle())
 		} else {
