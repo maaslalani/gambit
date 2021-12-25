@@ -144,18 +144,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.selected = square
 		}
 
-		if m.selected == "" {
-			return m, nil
-		}
-
-		// After any mouse click, we must generate the legal moves for the selected
+		// After a mouse click, we must generate the legal moves for the selected
 		// piece, if there is a newly selected piece
-		m.pieceMoves = []dt.Move{}
-		for _, move := range m.moves {
-			if strings.HasPrefix(move.String(), m.selected) {
-				m.pieceMoves = append(m.pieceMoves, move)
-			}
-		}
+		m.pieceMoves = legalPieceMoves(m.moves, m.selected)
 
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -176,4 +167,23 @@ func isLegalMove(legalMoves []dt.Move, destination string) bool {
 		}
 	}
 	return false
+}
+
+// legalPieceMoves returns the legal moves for a given piece this is usually
+// for the selected piece so that we know to which we can move. If there is no
+// selected piece we return an empty array of moves.
+func legalPieceMoves(moves []dt.Move, selected string) []dt.Move {
+	var legalMoves []dt.Move
+
+	if selected == "" {
+		return legalMoves
+	}
+
+	for _, move := range moves {
+		if strings.HasPrefix(move.String(), selected) {
+			legalMoves = append(legalMoves, move)
+		}
+	}
+
+	return legalMoves
 }
