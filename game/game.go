@@ -10,6 +10,7 @@ import (
 	"github.com/maaslalani/gambit/board"
 	"github.com/maaslalani/gambit/border"
 	"github.com/maaslalani/gambit/fen"
+	"github.com/maaslalani/gambit/moves"
 	"github.com/maaslalani/gambit/pieces"
 	"github.com/maaslalani/gambit/position"
 	. "github.com/maaslalani/gambit/style"
@@ -82,7 +83,7 @@ func (m model) View() string {
 				display = Cyan(display)
 			}
 
-			if isLegalMove(m.pieceMoves, position.ToSquare(rr, c)) {
+			if moves.IsLegal(m.pieceMoves, position.ToSquare(rr, c)) {
 				if cell == "" {
 					display = "."
 				}
@@ -146,7 +147,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// After a mouse click, we must generate the legal moves for the selected
 		// piece, if there is a newly selected piece
-		m.pieceMoves = legalPieceMoves(m.moves, m.selected)
+		m.pieceMoves = moves.LegalSelected(m.moves, m.selected)
 
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -156,34 +157,4 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, nil
-}
-
-// isLegalMove determines whether it is legal to move the the destination
-// square given a piece's legal moves
-func isLegalMove(legalMoves []dt.Move, destination string) bool {
-	for _, move := range legalMoves {
-		if strings.HasSuffix(move.String(), destination) {
-			return true
-		}
-	}
-	return false
-}
-
-// legalPieceMoves returns the legal moves for a given piece this is usually
-// for the selected piece so that we know to which we can move. If there is no
-// selected piece we return an empty array of moves.
-func legalPieceMoves(moves []dt.Move, selected string) []dt.Move {
-	var legalMoves []dt.Move
-
-	if selected == "" {
-		return legalMoves
-	}
-
-	for _, move := range moves {
-		if strings.HasPrefix(move.String(), selected) {
-			legalMoves = append(legalMoves, move)
-		}
-	}
-
-	return legalMoves
 }
