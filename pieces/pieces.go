@@ -1,7 +1,7 @@
 package pieces
 
-// Display maps pieces in FEN representation to their ASCII
-// representation for the user.
+// Display maps pieces from their FEN representations to their ASCII
+// representations for a more human readable experience.
 var Display = map[string]string{
 	"":  " ",
 	"B": "♗",

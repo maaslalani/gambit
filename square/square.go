@@ -6,7 +6,7 @@ import (
 	"github.com/maaslalani/gambit/board"
 )
 
-// fileToCol returns column number for a given file rune
+// fileToCol returns column number (e.g. 0) for a given file (e.g. 'a').
 func fileToCol(file rune) int {
 	col := int(file - 'a')
 	if col < board.FirstCol {
@@ -17,7 +17,7 @@ func fileToCol(file rune) int {
 	return col
 }
 
-// rankToRow returns a row number for a given rank
+// rankToRow returns a row number (e.g. 0) for a given rank (e.g. 1).
 func rankToRow(rank int) int {
 	row := rank - 1
 	if row < board.FirstRow {
@@ -28,11 +28,8 @@ func rankToRow(rank int) int {
 	return row
 }
 
-// ToPosition takes a square string and returns the
-// corresponding row and column for compatibility with the grid
-// (8x8 matrix).
-//
-// For example: "a1" returns (0, 0) and "h8" returns (7, 7).
+// ToPosition takes a square (e.g. a1) and returns the corresponding row and
+// column (e.g. 0,0) for compatibility with the grid (8x8 matrix).
 func ToPosition(square string) (int, int) {
 	col := fileToCol(rune(square[0]))
 	row, _ := strconv.Atoi(string(square[1]))

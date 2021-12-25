@@ -5,12 +5,14 @@ import (
 	"strings"
 )
 
-// Tokens returns the tokens of a FEN string
+// Tokens returns the (6) tokens of a FEN string
+//
+// [Pieces, Turn, Castling, En passant, Halfmove Clock, Fullmove number]
 func Tokens(fen string) []string {
 	return strings.Split(fen, " ")
 }
 
-// Ranks returns a slice of ranks from the FEN string
+// Ranks returns a slice of ranks from the first token of a FEN string
 func Ranks(fen string) []string {
 	return strings.Split(Tokens(fen)[0], "/")
 }
@@ -35,12 +37,12 @@ func Grid(fen string) [8][8]string {
 	return grid
 }
 
-// isNumeric returns true if the current rune is a number
+// isNumeric returns whether a rune is a number
 func isNumeric(r rune) bool {
 	return r >= '0' && r <= '9'
 }
 
-// runeToInt converts a rune to an int
+// runeToInt converts a rune to an integer
 func runeToInt(r rune) int {
 	return int(r - '0')
 }

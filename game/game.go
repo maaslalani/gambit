@@ -16,9 +16,10 @@ import (
 	. "github.com/maaslalani/gambit/style"
 )
 
-// model stores the state of the chess game. It tracks the board, legal moves,
-// and the selected piece as well as the subset of legal moves for the selected
-// piece.
+// model stores the state of the chess game.
+//
+// It tracks the board, legal moves, and the selected piece. It also keeps
+// track of the subset of legal moves for the currently selected piece
 type model struct {
 	board      *dt.Board
 	moves      []dt.Move
@@ -26,9 +27,9 @@ type model struct {
 	selected   string
 }
 
-// InitialModel returns an initial model of the game board using the starting
-// position of a normal chess game and generating the legal moves from the
-// starting position.
+// InitialModel returns an initial model of the game board. It uses the
+// starting position of a normal chess game and generates the legal moves from
+// the starting position.
 func InitialModel() tea.Model {
 	board := dt.ParseFen(dt.Startpos)
 	return model{
@@ -42,9 +43,11 @@ func (m model) Init() tea.Cmd {
 	return nil
 }
 
-// View converts a FEN string into a chess board with all pieces and empty
-// squares in a grid like pattern. We highlight the selected piece and the
-// legal moves for that piece so the user know where they can move.
+// View converts a FEN string into a human readable chess board. All pieces and
+// empty squares are arranged in a grid-like pattern. The selected piece is
+// highlighted and the legal moves for the selected piece are indicated by a
+// dot (.) for empty squares. Pieces that may be captured by the selected piece
+// are highlighted.
 //
 // For example, if the user selects the white pawn on E2 we indicate that they
 // can move to E3 and E4 legally.
@@ -72,6 +75,9 @@ func (m model) View() string {
 	var s strings.Builder
 	s.WriteString(border.Top())
 
+	// Traverse through the rows and columns of the board and print out the
+	// pieces and empty squares. Once a piece is selected, highlight the legal
+	// moves and pieces that may be captured by the selected piece.
 	for r, row := range fen.Grid(m.board.ToFen()) {
 		rr := board.LastRow - r
 		s.WriteString(Faint(fmt.Sprintf(" %d ", rr+1)) + border.Vertical)
@@ -79,10 +85,14 @@ func (m model) View() string {
 		for c, cell := range row {
 			display := pieces.Display[cell]
 
+			// The user selected the current cell, highlight it so they know it is
+			// selected.
 			if m.selected == position.ToSquare(rr, c) {
 				display = Cyan(display)
 			}
 
+			// Show all the cells to which the piece may move. If it is an empty cell
+			// we present a coloured dot, otherwise color the capturable piece.
 			if moves.IsLegal(m.pieceMoves, position.ToSquare(rr, c)) {
 				if cell == "" {
 					display = "."

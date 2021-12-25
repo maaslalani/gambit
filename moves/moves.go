@@ -6,8 +6,8 @@ import (
 	dt "github.com/dylhunn/dragontoothmg"
 )
 
-// IsLegal determines whether it is legal to move the the destination
-// square given a piece's legal moves
+// IsLegal determines whether it is legal to move to a destination square given
+// all of the legal moves that can be made by a piece.
 func IsLegal(legalMoves []dt.Move, destination string) bool {
 	for _, move := range legalMoves {
 		if strings.HasSuffix(move.String(), destination) {
@@ -17,12 +17,12 @@ func IsLegal(legalMoves []dt.Move, destination string) bool {
 	return false
 }
 
-// LegalSelected returns the legal moves for a given piece this is usually
-// for the selected piece so that we know to which we can move. If there is no
-// selected piece we return an empty array of moves.
+// LegalSelected returns the legal moves for a given piece based on an origin
+// square given all the current legal moves for all pieces on the board.
 func LegalSelected(moves []dt.Move, selected string) []dt.Move {
 	var legalMoves []dt.Move
 
+	// Return an empty slice if there is no square selected
 	if selected == "" {
 		return legalMoves
 	}

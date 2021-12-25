@@ -13,9 +13,9 @@ const (
 	// cellWidth represents how many columns are in a cell
 	cellWidth = 4
 
-	// marginLeft and marginTop represent how much to offset the
-	// chess board from the top left of the terminal to account for
-	// padding and rank labels
+	// marginLeft and marginTop represent the offset of the chess
+	// board from the top left of the terminal window. This is to
+	// account for padding and rank labels
 	marginLeft = 3
 	marginTop  = 1
 
@@ -23,8 +23,8 @@ const (
 	Horizontal = "─"
 )
 
-// Cell returns the square that was clicked based on mouse
-// coordinates adjusting for margins and cell dimensions.
+// Cell returns the square that was clicked based on mouse coordinates adjusted
+// for margins and cell dimensions.
 func Cell(x, y int) string {
 	col := (x - marginLeft) / cellWidth
 	row := board.LastRow - (y-marginTop)/cellHeight
