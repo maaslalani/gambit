@@ -29,7 +29,6 @@ func Cell(x, y int) string {
 	col := (x - marginLeft) / cellWidth
 	row := board.LastRow - (y-marginTop)/cellHeight
 	return position.ToSquare(row, col)
-
 }
 
 // withMarginLeft returns a string with a prepended left margin
