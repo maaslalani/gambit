@@ -25,6 +25,7 @@ type model struct {
 	moves      []dt.Move
 	pieceMoves []dt.Move
 	selected   string
+	buffer     string
 }
 
 // InitialModel returns an initial model of the game board. It uses the
@@ -124,47 +125,65 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// square for our piece or the destination square for a move if a piece is
 		// already square and that destination square completes a legal move
 		square := border.Cell(msg.X, msg.Y)
-
-		// If the user has already selected a piece, check see if the square that
-		// the user clicked on is a legal move for that piece. If so, make the move.
-		if m.selected != "" {
-			from := m.selected
-			to := square
-
-			for _, move := range m.pieceMoves {
-				if move.String() == from+to {
-					m.board.Apply(move)
-
-					// We have applied a new move and the chess board is in a new state.
-					// We must generate the new legal moves for the new state.
-					m.moves = m.board.GenerateLegalMoves()
-
-					// We have made a move, so we no longer have a selected piece or
-					// legal moves for any selected pieces.
-					m.selected = ""
-					m.pieceMoves = []dt.Move{}
-
-					return m, nil
-				}
-			}
-
-			// The user clicked on a square that wasn't a legal move for the selected
-			// piece, so we select the piece that was clicked on instead
-			m.selected = to
-		} else {
-			m.selected = square
-		}
-
-		// After a mouse click, we must generate the legal moves for the selected
-		// piece, if there is a newly selected piece
-		m.pieceMoves = moves.LegalSelected(m.moves, m.selected)
-
+		return m.Select(square)
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
+		case "a", "b", "c", "d", "e", "f", "g", "h":
+			m.buffer = msg.String()
+		case "1", "2", "3", "4", "5", "6", "7", "8":
+			var move string
+			if m.buffer != "" {
+				move = m.buffer + msg.String()
+				m.buffer = ""
+			}
+			return m.Select(move)
+		case "esc":
+			return m.Deselect()
 		}
 	}
+
+	return m, nil
+}
+
+func (m model) Deselect() (tea.Model, tea.Cmd) {
+	m.selected = ""
+	m.pieceMoves = []dt.Move{}
+	return m, nil
+}
+
+func (m model) Select(square string) (tea.Model, tea.Cmd) {
+	// If the user has already selected a piece, check see if the square that
+	// the user clicked on is a legal move for that piece. If so, make the move.
+	if m.selected != "" {
+		from := m.selected
+		to := square
+
+		for _, move := range m.pieceMoves {
+			if move.String() == from+to {
+				m.board.Apply(move)
+
+				// We have applied a new move and the chess board is in a new state.
+				// We must generate the new legal moves for the new state.
+				m.moves = m.board.GenerateLegalMoves()
+
+				// We have made a move, so we no longer have a selected piece or
+				// legal moves for any selected pieces.
+				return m.Deselect()
+			}
+		}
+
+		// The user clicked on a square that wasn't a legal move for the selected
+		// piece, so we select the piece that was clicked on instead
+		m.selected = to
+	} else {
+		m.selected = square
+	}
+
+	// After a mouse click, we must generate the legal moves for the selected
+	// piece, if there is a newly selected piece
+	m.pieceMoves = moves.LegalSelected(m.moves, m.selected)
 
 	return m, nil
 }
