@@ -134,7 +134,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Find the square the user clicked on, this will either be our square
 		// square for our piece or the destination square for a move if a piece is
 		// already square and that destination square completes a legal move
-		square := border.Cell(msg.X, msg.Y)
+		square := border.Cell(msg.X, msg.Y, m.flipped)
 		return m.Select(square)
 	case tea.KeyMsg:
 		switch msg.String() {

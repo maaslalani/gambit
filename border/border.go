@@ -25,9 +25,12 @@ const (
 
 // Cell returns the square that was clicked based on mouse coordinates adjusted
 // for margins and cell dimensions.
-func Cell(x, y int) string {
+func Cell(x, y int, flipped bool) string {
 	col := (x - marginLeft) / cellWidth
-	row := board.LastRow - (y-marginTop)/cellHeight
+	row := (y - marginTop) / cellHeight
+	if !flipped {
+		row = board.LastRow - row
+	}
 	return position.ToSquare(row, col)
 }
 
