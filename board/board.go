@@ -1,8 +1,13 @@
 package board
 
 const (
+	Cols = 8
+	Rows = 8
+)
+
+const (
 	FirstCol = 0
 	FirstRow = 0
-	LastCol  = 7
-	LastRow  = 7
+	LastCol  = Cols - 1
+	LastRow  = Rows - 1
 )

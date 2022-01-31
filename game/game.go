@@ -26,6 +26,7 @@ type model struct {
 	pieceMoves []dt.Move
 	selected   string
 	buffer     string
+	flipped    bool
 }
 
 // InitialModel returns an initial model of the game board. It uses the
@@ -79,8 +80,17 @@ func (m model) View() string {
 	// Traverse through the rows and columns of the board and print out the
 	// pieces and empty squares. Once a piece is selected, highlight the legal
 	// moves and pieces that may be captured by the selected piece.
-	for r, row := range fen.Grid(m.board.ToFen()) {
+	var rows = fen.Grid(m.board.ToFen())
+
+	for r := board.FirstRow; r < board.Rows; r++ {
+		row := rows[r]
 		rr := board.LastRow - r
+
+		if m.flipped {
+			row = rows[board.LastRow-r]
+			rr = r
+		}
+
 		s.WriteString(Faint(fmt.Sprintf(" %d ", rr+1)) + border.Vertical)
 
 		for c, cell := range row {
@@ -130,6 +140,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
+		case "ctrl+f":
+			m.flipped = !m.flipped
 		case "a", "b", "c", "d", "e", "f", "g", "h":
 			m.buffer = msg.String()
 		case "1", "2", "3", "4", "5", "6", "7", "8":
