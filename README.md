@@ -8,6 +8,19 @@ Chess board in your terminal.
 </p>
 <br/>
 
+### Installation
+
+```sh
+go install github.com/maaslalani/gambit@latest
+```
+
+or run from source
+
+```sh
+git clone github.com/maaslalani/gambit
+go run ./...
+```
+
 
 ### Move
 
