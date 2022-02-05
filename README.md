@@ -11,17 +11,27 @@ Chess board in your terminal.
 
 ### Move
 
-You may use the mouse to move your pieces. You may also
-type out the square the piece you want to move is on
-followed by the square to which you want to move the piece.
+There are two ways to move in `gambit`:
 
-### Players
+* Type out the square the piece you want to move is on, then type out the square to which you want to move the piece.
+* With the mouse, click on the target piece and target square.
 
-`gambit` supports local and networked play. You can play a
-local game by running `gambit` and moving the pieces. You
-can flip the board by pressing <kbd>ctrl+f</kbd> to allow
-the second player to go.
+### Play
 
-For networked play (not available yet), both players can
-run `gambit unique-room-id`, this will connect both players
-to a shared room in which both can take turns making moves.
+You can play a game by running:
+
+```
+gambit
+```
+
+You can press <kbd>ctrl+f</kbd> to flip the board to give a better perspective
+for the second player.
+
+### Future
+
+In the future, `gambit` will support:
+
+* networked play, where two players can run
+`gabmit unique-room-id` and play together through peer-to-peer communication.
+
+* Single player games, by adding a chess engine
