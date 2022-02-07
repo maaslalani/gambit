@@ -29,11 +29,9 @@ type model struct {
 	flipped    bool
 }
 
-// InitialModel returns an initial model of the game board. It uses the
-// starting position of a normal chess game and generates the legal moves from
-// the starting position.
-func InitialModel() tea.Model {
-	board := dt.ParseFen(dt.Startpos)
+// InitialModel returns an initial model of the game board.
+func InitialModel(position string) tea.Model {
+	board := dt.ParseFen(position)
 	return model{
 		board: &board,
 		moves: board.GenerateLegalMoves(),
