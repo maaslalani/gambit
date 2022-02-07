@@ -8,6 +8,7 @@ import (
 
 var fenRegex = regexp.MustCompile(`\s*([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw-]\s(([a-hkqA-HKQ]{1,4})|(-))\s(([a-h][36])|(-))\s\d+\s\d+\s*`)
 
+// IsValid returns whether a FEN string is valid by checking a naive regular expression
 func IsValid(fen string) bool {
 	return fenRegex.MatchString(fen)
 }
