@@ -2,8 +2,15 @@ package fen
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
+
+var fenRegex = regexp.MustCompile(`\s*([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw-]\s(([a-hkqA-HKQ]{1,4})|(-))\s(([a-h][36])|(-))\s\d+\s\d+\s*`)
+
+func IsValid(fen string) bool {
+	return fenRegex.MatchString(fen)
+}
 
 // Tokens returns the (6) tokens of a FEN string
 //

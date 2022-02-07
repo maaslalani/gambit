@@ -31,7 +31,11 @@ type model struct {
 
 // InitialModel returns an initial model of the game board.
 func InitialModel(position string) tea.Model {
+	if !fen.IsValid(position) {
+		position = dt.Startpos
+	}
 	board := dt.ParseFen(position)
+
 	return model{
 		board: &board,
 		moves: board.GenerateLegalMoves(),
