@@ -88,8 +88,12 @@ func (m model) View() string {
 		row := rows[r]
 		rr := board.LastRow - r
 
+		// reverse the row if the board is flipped
 		if m.flipped {
 			row = rows[board.LastRow-r]
+			for i, j := 0, len(row)-1; i < j; i, j = i+1, j-1 {
+				row[i], row[j] = row[j], row[i]
+			}
 			rr = r
 		}
 
@@ -97,16 +101,17 @@ func (m model) View() string {
 
 		for c, cell := range row {
 			display := pieces.Display[cell]
+			selected := position.ToSquare(r, c, m.flipped)
 
 			// The user selected the current cell, highlight it so they know it is
 			// selected.
-			if m.selected == position.ToSquare(rr, c) {
+			if m.selected == selected {
 				display = Cyan(display)
 			}
 
 			// Show all the cells to which the piece may move. If it is an empty cell
 			// we present a coloured dot, otherwise color the capturable piece.
-			if moves.IsLegal(m.pieceMoves, position.ToSquare(rr, c)) {
+			if moves.IsLegal(m.pieceMoves, selected) {
 				if cell == "" {
 					display = "."
 				}
@@ -122,7 +127,7 @@ func (m model) View() string {
 		}
 	}
 
-	s.WriteString(border.Bottom() + Faint(border.BottomLabels()))
+	s.WriteString(border.Bottom() + Faint(border.BottomLabels(m.flipped)))
 	return s.String()
 }
 

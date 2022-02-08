@@ -1,6 +1,7 @@
 package border
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/maaslalani/gambit/board"
@@ -28,19 +29,7 @@ const (
 func Cell(x, y int, flipped bool) string {
 	col := (x - marginLeft) / cellWidth
 	row := (y - marginTop) / cellHeight
-	if !flipped {
-		// Careful: `flipped` is a bit strange here.
-		//
-		// `flipped` represents whether the _chess board_ is flipped.
-		// Normally, the order of the rows will be from 8 (top) to 1 (bottom).
-		// If the board is flipped (i.e. black's turn) then the order of the rows
-		// would be how one would normally print of the rows: 1 (top) to 8 (bottom).
-		//
-		// In other words, flipped is flipped. This trade-off is for consistency
-		// with the other parts of the code base, namely the model.flipped property
-		row = board.LastRow - row
-	}
-	return position.ToSquare(row, col)
+	return position.ToSquare(row, col, flipped)
 }
 
 // withMarginLeft returns a string with a prepended left margin
@@ -71,6 +60,17 @@ func Bottom() string {
 }
 
 // BottomLabels returns the labels for the files
-func BottomLabels() string {
-	return withMarginLeft("  A   B   C   D   E   F   G   H\n")
+func BottomLabels(flipped bool) string {
+	labels := ""
+	for i := 0; i < board.Cols; i++ {
+		c := i
+		if flipped {
+			c = board.LastCol - i
+		}
+		labels += fmt.Sprintf("%c", c+'A')
+		if i != board.LastCol {
+			labels += withMarginLeft("")
+		}
+	}
+	return withMarginLeft(fmt.Sprintf("  %s\n", labels))
 }

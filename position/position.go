@@ -29,6 +29,13 @@ func rowToRank(row int) int {
 
 // ToSquare returns the square position (e.g. a1) of a given row and column
 // (e.g. 0,0) for display or checking legal moves.
-func ToSquare(row, col int) string {
+func ToSquare(row, col int, flipped bool) string {
+	// If the board is flipped, the row and column are reversed
+	// i.e. h becomes a and 8 becomes 1
+	if flipped {
+		col = board.LastCol - col
+	} else {
+		row = board.LastRow - row
+	}
 	return colToFile(col) + strconv.Itoa(rowToRank(row))
 }
