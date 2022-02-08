@@ -24,10 +24,6 @@ func TestTopBorder(t *testing.T) {
 			border.Bottom,
 			"   └───┴───┴───┴───┴───┴───┴───┴───┘\n",
 		},
-		{
-			border.BottomLabels,
-			"     A   B   C   D   E   F   G   H\n",
-		},
 	}
 
 	for _, test := range tests {
