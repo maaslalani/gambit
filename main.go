@@ -9,26 +9,52 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	dt "github.com/dylhunn/dragontoothmg"
+	"github.com/maaslalani/gambit/cmd"
 	"github.com/maaslalani/gambit/game"
+	"github.com/muesli/coral"
 )
 
-func main() {
-	startPos, err := readStdin()
+var (
+	rootCmd = &coral.Command{
+		Use:                   "gambit",
+		Short:                 "Play chess in your terminal",
+		DisableFlagsInUseLine: true,
+		RunE: func(cmd *coral.Command, args []string) error {
+			if len(args) == 0 {
+				startPos, _ := readStdin()
 
-	if err != nil {
-		startPos = dt.Startpos
+				debug := os.Getenv("DEBUG")
+				if debug != "" {
+					f, err := tea.LogToFile(debug, "")
+					if err != nil {
+						log.Fatal(err)
+					}
+					defer f.Close()
+				}
+
+				p := tea.NewProgram(
+					game.NewGameWithPosition(startPos),
+					tea.WithAltScreen(),
+					tea.WithMouseCellMotion(),
+				)
+
+				return p.Start()
+			}
+
+			return cmd.Help()
+		},
 	}
+)
 
-	p := tea.NewProgram(
-		game.InitialModel(startPos),
-		tea.WithAltScreen(),
-		tea.WithMouseCellMotion(),
+func init() {
+	rootCmd.AddCommand(
+		cmd.ServeCmd,
 	)
+}
 
-	err = p.Start()
-	if err != nil {
-		log.Fatal(err)
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
 	}
 }
 
