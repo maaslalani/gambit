@@ -16,11 +16,24 @@ import (
 	. "github.com/maaslalani/gambit/style"
 )
 
-// model stores the state of the chess game.
+// MoveMsg is a message that controls the board from outside the model.
+type MoveMsg struct {
+	From string
+	To   string
+}
+
+// NotifyMsg is a message that gets emitted when the user makes a move.
+type NotifyMsg struct {
+	From string
+	To   string
+	Turn bool
+}
+
+// Game stores the state of the chess game.
 //
 // It tracks the board, legal moves, and the selected piece. It also keeps
 // track of the subset of legal moves for the currently selected piece
-type model struct {
+type Game struct {
 	board      *dt.Board
 	moves      []dt.Move
 	pieceMoves []dt.Move
@@ -29,21 +42,28 @@ type model struct {
 	flipped    bool
 }
 
-// InitialModel returns an initial model of the game board.
-func InitialModel(position string) tea.Model {
+// NewGame returns an initial model of the game board.
+func NewGame() *Game {
+	return NewGameWithPosition(dt.Startpos)
+}
+
+// NewGameWithPosition returns an initial model of the game board with the
+// specified FEN position.
+func NewGameWithPosition(position string) *Game {
+	m := &Game{}
+
 	if !fen.IsValid(position) {
 		position = dt.Startpos
 	}
 	board := dt.ParseFen(position)
+	m.board = &board
+	m.moves = m.board.GenerateLegalMoves()
 
-	return model{
-		board: &board,
-		moves: board.GenerateLegalMoves(),
-	}
+	return m
 }
 
 // Init Initializes the model
-func (m model) Init() tea.Cmd {
+func (m *Game) Init() tea.Cmd {
 	return nil
 }
 
@@ -57,9 +77,9 @@ func (m model) Init() tea.Cmd {
 // can move to E3 and E4 legally.
 //
 //    ┌───┬───┬───┬───┬───┬───┬───┬───┐
-//  8 │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │
+//  8 │ ♖ │ ♘ │ ♗ │ ♕ │ ♔ │ ♗ │ ♘ │ ♖ │
 //    ├───┼───┼───┼───┼───┼───┼───┼───┤
-//  7 │ ♖ │ ♘ │ ♗ │ ♕ │ ♔ │ ♗ │ ♘ │ ♖ │
+//  7 │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │
 //    ├───┼───┼───┼───┼───┼───┼───┼───┤
 //  6 │   │   │   │   │   │   │   │   │
 //    ├───┼───┼───┼───┼───┼───┼───┼───┤
@@ -69,13 +89,13 @@ func (m model) Init() tea.Cmd {
 //    ├───┼───┼───┼───┼───┼───┼───┼───┤
 //  3 │   │   │   │   │ . │   │   │   │
 //    ├───┼───┼───┼───┼───┼───┼───┼───┤
-//  2 │ ♜ │ ♞ │ ♝ │ ♛ │ ♚ │ ♝ │ ♞ │ ♜ │
+//  2 │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │
 //    ├───┼───┼───┼───┼───┼───┼───┼───┤
-//  1 │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │
+//  1 │ ♜ │ ♞ │ ♝ │ ♛ │ ♚ │ ♝ │ ♞ │ ♜ │
 //    └───┴───┴───┴───┴───┴───┴───┴───┘
 //      A   B   C   D   E   F   G   H
 //
-func (m model) View() string {
+func (m *Game) View() string {
 	var s strings.Builder
 	s.WriteString(border.Top())
 
@@ -131,7 +151,7 @@ func (m model) View() string {
 	return s.String()
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *Game) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.MouseMsg:
 		if msg.Type != tea.MouseLeft {
@@ -161,18 +181,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "esc":
 			return m.Deselect()
 		}
+	case MoveMsg:
+		m.selected = msg.From
+		m.pieceMoves = moves.LegalSelected(m.moves, m.selected)
+		return m.Select(msg.To)
 	}
 
 	return m, nil
 }
 
-func (m model) Deselect() (tea.Model, tea.Cmd) {
+func (m *Game) Notify(from, to string, turn bool) tea.Cmd {
+	return func() tea.Msg {
+		return NotifyMsg{From: from, To: to, Turn: turn}
+	}
+}
+
+func (m *Game) Deselect() (tea.Model, tea.Cmd) {
 	m.selected = ""
 	m.pieceMoves = []dt.Move{}
 	return m, nil
 }
 
-func (m model) Select(square string) (tea.Model, tea.Cmd) {
+func (m *Game) Select(square string) (tea.Model, tea.Cmd) {
 	// If the user has already selected a piece, check see if the square that
 	// the user clicked on is a legal move for that piece. If so, make the move.
 	if m.selected != "" {
@@ -189,7 +219,8 @@ func (m model) Select(square string) (tea.Model, tea.Cmd) {
 
 				// We have made a move, so we no longer have a selected piece or
 				// legal moves for any selected pieces.
-				return m.Deselect()
+				g, cmd := m.Deselect()
+				return g, tea.Batch(m.Notify(from, to, m.board.Wtomove), cmd)
 			}
 		}
 
@@ -205,4 +236,14 @@ func (m model) Select(square string) (tea.Model, tea.Cmd) {
 	m.pieceMoves = moves.LegalSelected(m.moves, m.selected)
 
 	return m, nil
+}
+
+// SetFlipped sets the board to be flipped or not.
+func (g *Game) SetFlipped(flip bool) {
+	g.flipped = flip
+}
+
+// Position returns the current FEN position of the board.
+func (g *Game) Position() string {
+	return g.board.ToFen()
 }
