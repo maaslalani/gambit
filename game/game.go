@@ -24,9 +24,11 @@ type MoveMsg struct {
 
 // NotifyMsg is a message that gets emitted when the user makes a move.
 type NotifyMsg struct {
-	From string
-	To   string
-	Turn bool
+	From      string
+	To        string
+	Turn      bool
+	Check     bool
+	Checkmate bool
 }
 
 // Game stores the state of the chess game.
@@ -105,12 +107,12 @@ func (m *Game) View() string {
 	var rows = fen.Grid(m.board.ToFen())
 
 	for r := board.FirstRow; r < board.Rows; r++ {
-		row := rows[r]
+		row := pieces.ToPieces(rows[r])
 		rr := board.LastRow - r
 
 		// reverse the row if the board is flipped
 		if m.flipped {
-			row = rows[board.LastRow-r]
+			row = pieces.ToPieces(rows[board.LastRow-r])
 			for i, j := 0, len(row)-1; i < j; i, j = i+1, j-1 {
 				row[i], row[j] = row[j], row[i]
 			}
@@ -119,20 +121,26 @@ func (m *Game) View() string {
 
 		s.WriteString(Faint(fmt.Sprintf(" %d ", rr+1)) + border.Vertical)
 
-		for c, cell := range row {
-			display := pieces.Display[cell]
+		for c, piece := range row {
+			whiteTurn := m.board.Wtomove
+			display := piece.Display()
+			check := m.board.OurKingInCheck()
 			selected := position.ToSquare(r, c, m.flipped)
 
 			// The user selected the current cell, highlight it so they know it is
-			// selected.
+			// selected. If it is a check, highlight the king in red.
 			if m.selected == selected {
 				display = Cyan(display)
+			} else if check && piece.IsKing() {
+				if (whiteTurn && piece.IsWhite()) || (!whiteTurn && piece.IsBlack()) {
+					display = Red(display)
+				}
 			}
 
 			// Show all the cells to which the piece may move. If it is an empty cell
 			// we present a coloured dot, otherwise color the capturable piece.
 			if moves.IsLegal(m.pieceMoves, selected) {
-				if cell == "" {
+				if piece.IsEmpty() {
 					display = "."
 				}
 				display = Magenta(display)
@@ -190,9 +198,12 @@ func (m *Game) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *Game) Notify(from, to string, turn bool) tea.Cmd {
+func (m *Game) Notify(from, to string, turn, check, checkmate bool) tea.Cmd {
 	return func() tea.Msg {
-		return NotifyMsg{From: from, To: to, Turn: turn}
+		return NotifyMsg{
+			From: from, To: to, Turn: turn,
+			Check: check, Checkmate: checkmate,
+		}
 	}
 }
 
@@ -211,16 +222,20 @@ func (m *Game) Select(square string) (tea.Model, tea.Cmd) {
 
 		for _, move := range m.pieceMoves {
 			if move.String() == from+to {
+				var cmds []tea.Cmd
 				m.board.Apply(move)
 
 				// We have applied a new move and the chess board is in a new state.
 				// We must generate the new legal moves for the new state.
 				m.moves = m.board.GenerateLegalMoves()
+				check := m.board.OurKingInCheck()
+				checkmate := check && len(m.moves) == 0
 
 				// We have made a move, so we no longer have a selected piece or
 				// legal moves for any selected pieces.
 				g, cmd := m.Deselect()
-				return g, tea.Batch(m.Notify(from, to, m.board.Wtomove), cmd)
+				cmds = append(cmds, cmd, m.Notify(from, to, m.board.Wtomove, check, checkmate))
+				return g, tea.Batch(cmds...)
 			}
 		}
 
