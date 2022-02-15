@@ -16,13 +16,13 @@ var (
 
 // Room is a game room with a unique id, password, and a list of players.
 type Room struct {
-	id       string
-	password string
-	players  map[string]*Player
-	turn     bool // true = white, false = black
-	sync     chan tea.Msg
-	done     chan struct{}
-	finish   chan string
+	id          string
+	password    string
+	players     map[string]*Player
+	whiteToMove bool
+	sync        chan tea.Msg
+	done        chan struct{}
+	finish      chan string
 }
 
 // String implements the Stringer interface.
@@ -34,13 +34,13 @@ func (r *Room) String() string {
 func NewRoom(id, password string, finish chan string) *Room {
 	s := make(chan tea.Msg)
 	r := &Room{
-		id:       id,
-		password: password,
-		players:  make(map[string]*Player, 0),
-		turn:     true,
-		sync:     s,
-		done:     make(chan struct{}, 1),
-		finish:   finish,
+		id:          id,
+		password:    password,
+		players:     make(map[string]*Player, 0),
+		whiteToMove: true,
+		sync:        s,
+		done:        make(chan struct{}, 1),
+		finish:      finish,
 	}
 	go func() {
 		r.Listen()
@@ -51,7 +51,7 @@ func NewRoom(id, password string, finish chan string) *Room {
 // P1 returns the player with the first turn.
 func (r *Room) P1() *Player {
 	for _, p := range r.players {
-		if p.t == whitePlayer {
+		if p.ptype == whitePlayer {
 			return p
 		}
 	}
@@ -61,7 +61,7 @@ func (r *Room) P1() *Player {
 // P2 returns the player with the second turn.
 func (r *Room) P2() *Player {
 	for _, p := range r.players {
-		if p.t == blackPlayer {
+		if p.ptype == blackPlayer {
 			return p
 		}
 	}
@@ -96,10 +96,12 @@ func (r *Room) WriteString(s string) (int, error) {
 // Close closes the room and deletes the room from the server memory.
 func (r *Room) Close() {
 	log.Printf("closing room %s", r)
+
 	for _, p := range r.players {
 		p.WriteString("Idle timeout.\n")
 		p.Close()
 	}
+
 	r.done <- struct{}{}
 	r.finish <- r.id
 	close(r.sync)
@@ -117,7 +119,7 @@ func (r *Room) Listen() {
 			r.Close()
 		case m := <-r.sync:
 			color := whitePlayer
-			if !r.turn {
+			if !r.whiteToMove {
 				color = blackPlayer
 			}
 			switch msg := m.(type) {
@@ -125,7 +127,7 @@ func (r *Room) Listen() {
 				r.SendMsg(msg)
 			case game.MoveMsg:
 				note := fmt.Sprintf("%s moved %s to %s", color, msg.From, msg.To)
-				r.turn = !r.turn
+				r.whiteToMove = !r.whiteToMove
 				r.SendMsg(m)
 				r.SendMsg(NoteMsg(note))
 			}
@@ -147,17 +149,17 @@ func (r *Room) Position() string {
 	p1 := r.P1()
 	p2 := r.P2()
 	switch {
-	case !r.turn && p1 != nil:
+	case !r.whiteToMove && p1 != nil:
 		fallthrough
-	case r.turn && p2 == nil && p1 != nil:
+	case r.whiteToMove && p2 == nil && p1 != nil:
 		return p1.Position()
-	case r.turn && p2 != nil:
+	case r.whiteToMove && p2 != nil:
 		fallthrough
-	case !r.turn && p1 == nil && p2 != nil:
+	case !r.whiteToMove && p1 == nil && p2 != nil:
 		return p2.Position()
 	default:
 		for _, p := range r.players {
-			if p.t == observerPlayer {
+			if p.ptype == observerPlayer {
 				return p.Position()
 			}
 		}
@@ -169,12 +171,12 @@ func (r *Room) Position() string {
 func (r *Room) MakePlayer(pt PlayerType, s ssh.Session) *Player {
 	pos := r.Position()
 	pl := &Player{
-		r: r,
-		s: s,
-		t: pt,
-		k: PublicKey{key: s.PublicKey()},
+		room:    r,
+		session: s,
+		ptype:   pt,
+		key:     PublicKey{key: s.PublicKey()},
 	}
-	m := NewSharedGame(pl, r.sync, &r.turn, pt == whitePlayer, pt == observerPlayer, pos)
+	m := NewSharedGame(pl, r.sync, &r.whiteToMove, pt == whitePlayer, pt == observerPlayer, pos)
 	p := tea.NewProgram(
 		m,
 		tea.WithAltScreen(),
@@ -182,8 +184,8 @@ func (r *Room) MakePlayer(pt PlayerType, s ssh.Session) *Player {
 		tea.WithInput(s),
 		tea.WithOutput(s),
 	)
-	pl.p = p
-	pl.g = m
+	pl.program = p
+	pl.game = m
 	return pl
 }
 
@@ -196,7 +198,7 @@ func (r *Room) AddPlayer(s ssh.Session) (*Player, error) {
 	pub := PublicKey{key: k}
 	p, ok := r.players[pub.String()]
 	if ok {
-		return nil, fmt.Errorf("player %s already in room", p)
+		return nil, fmt.Errorf("Player %s is already in the room", p)
 	}
 	p1 := r.P1()
 	p2 := r.P2()
@@ -216,7 +218,7 @@ func (r *Room) AddPlayer(s ssh.Session) (*Player, error) {
 func (r *Room) ObserversCount() int {
 	n := 0
 	for _, p := range r.players {
-		if p.t == observerPlayer {
+		if p.ptype == observerPlayer {
 			n++
 		}
 	}
