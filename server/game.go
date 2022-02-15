@@ -17,7 +17,7 @@ type NoteMsg string
 // tea model and synchronizes messages among players and server.
 type SharedGame struct {
 	player   *Player
-	g        *game.Game
+	game     *game.Game
 	note     string
 	turn     bool
 	observer bool
@@ -31,7 +31,7 @@ func NewSharedGame(p *Player, sync chan tea.Msg, roomTurn *bool, turn, observer 
 	g.SetFlipped(!turn)
 	r := &SharedGame{
 		player:   p,
-		g:        g,
+		game:     g,
 		turn:     turn,
 		observer: observer,
 		roomTurn: roomTurn,
@@ -64,8 +64,8 @@ func (r *SharedGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case game.MoveMsg:
-		g, cmd := r.g.Update(msg)
-		r.g = g.(*game.Game)
+		g, cmd := r.game.Update(msg)
+		r.game = g.(*game.Game)
 		cmds = append(cmds, cmd)
 	case NoteMsg:
 		r.note = string(msg)
@@ -75,33 +75,33 @@ func (r *SharedGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if msg.Type != tea.MouseLeft {
 				return r, nil
 			}
-			g, cmd := r.g.Update(msg)
+			g, cmd := r.game.Update(msg)
 			cmds = append(cmds, cmd)
-			r.g = g.(*game.Game)
+			r.game = g.(*game.Game)
 		}
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
-			g, cmd := r.g.Update(msg)
-			r.g = g.(*game.Game)
+			g, cmd := r.game.Update(msg)
+			r.game = g.(*game.Game)
 			cmds = append(cmds, cmd)
 			cmds = append(cmds, tea.Quit)
 		case "ctrl+f":
-			g, cmd := r.g.Update(msg)
+			g, cmd := r.game.Update(msg)
 			cmds = append(cmds, cmd)
-			r.g = g.(*game.Game)
+			r.game = g.(*game.Game)
 		default:
 			if !r.observer && r.turn == *r.roomTurn {
-				g, cmd := r.g.Update(msg)
+				g, cmd := r.game.Update(msg)
 				cmds = append(cmds, cmd)
-				r.g = g.(*game.Game)
+				r.game = g.(*game.Game)
 			}
 		}
 	default:
 		if !r.observer && r.turn == *r.roomTurn {
-			g, cmd := r.g.Update(msg)
+			g, cmd := r.game.Update(msg)
 			cmds = append(cmds, cmd)
-			r.g = g.(*game.Game)
+			r.game = g.(*game.Game)
 		}
 	}
 	return r, tea.Batch(cmds...)
@@ -110,7 +110,7 @@ func (r *SharedGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View implements bubble tea model.
 func (r *SharedGame) View() string {
 	s := strings.Builder{}
-	s.WriteString(r.g.View())
+	s.WriteString(r.game.View())
 	if r.note != "" {
 		s.WriteString("\n")
 		s.WriteString(r.note)
@@ -128,10 +128,10 @@ func (r *SharedGame) renderInfo() string {
 	if *r.roomTurn {
 		turn = "White"
 	}
-	fmt.Fprintf(&s, "ID: %s\n", r.player.r.id)
+	fmt.Fprintf(&s, "ID: %s\n", r.player.room.id)
 	fmt.Fprintf(&s, "Turn: %s\n", turn)
 	fmt.Fprintf(&s, "User: %s\n", r.player)
-	os := r.player.r.ObserversCount()
+	os := r.player.room.ObserversCount()
 	if os > 0 {
 		fmt.Fprintf(&s, "Observers: %d", os)
 	}

@@ -17,8 +17,8 @@ type PublicKey struct {
 }
 
 // String implements the Stringer interface.
-func (k PublicKey) String() string {
-	return fmt.Sprintf("%s", gossh.MarshalAuthorizedKey(k.key))
+func (pk PublicKey) String() string {
+	return fmt.Sprintf("%s", gossh.MarshalAuthorizedKey(pk.key))
 }
 
 // Server is a server that manages chess games.
@@ -26,7 +26,7 @@ type Server struct {
 	host  string
 	port  int
 	srv   *ssh.Server
-	games map[string]*Room
+	rooms map[string]*Room
 }
 
 // NewServer creates a new server.
@@ -34,9 +34,9 @@ func NewServer(keyPath, host string, port int) (*Server, error) {
 	s := &Server{
 		host:  host,
 		port:  port,
-		games: make(map[string]*Room),
+		rooms: make(map[string]*Room),
 	}
-	srv, err := wish.NewServer(
+	ws, err := wish.NewServer(
 		ssh.PasswordAuth(passwordHandler),
 		ssh.PublicKeyAuth(publicKeyHandler),
 		wish.WithHostKeyPath(keyPath),
@@ -48,7 +48,7 @@ func NewServer(keyPath, host string, port int) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.srv = srv
+	s.srv = ws
 	return s, nil
 }
 
@@ -59,8 +59,8 @@ func (s *Server) Start() error {
 
 // Shutdown shuts down the server.
 func (s *Server) Shutdown(ctx context.Context) error {
-	for _, g := range s.games {
-		g.Close()
+	for _, room := range s.rooms {
+		room.Close()
 	}
 	return s.srv.Shutdown(ctx)
 }
@@ -75,11 +75,11 @@ func publicKeyHandler(ctx ssh.Context, key ssh.PublicKey) bool {
 
 // FindRoom finds a room with the given id.
 func (s *Server) FindRoom(id string) *Room {
-	g, ok := s.games[id]
+	r, ok := s.rooms[id]
 	if !ok {
 		return nil
 	}
-	return g
+	return r
 }
 
 // NewRoom creates a new room with the given id and password.
@@ -88,10 +88,11 @@ func (s *Server) NewRoom(id, password string) *Room {
 	go func() {
 		id := <-finish
 		log.Printf("deleting room %s", id)
-		delete(s.games, id)
+		delete(s.rooms, id)
 		close(finish)
 	}()
-	g := NewRoom(id, password, finish)
-	s.games[id] = g
-	return g
+
+	room := NewRoom(id, password, finish)
+	s.rooms[id] = room
+	return room
 }

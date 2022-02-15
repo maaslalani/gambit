@@ -1,8 +1,8 @@
 package server
 
 import (
-	"fmt"
 	"log"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/wish"
@@ -40,14 +40,14 @@ func gambitMiddleware(srv *Server) wish.Middleware {
 			}
 
 			if room.password != password {
-				s.Write([]byte(help("wrong password")))
+				s.Write([]byte(help("Incorrect password")))
 				s.Exit(1)
 				return
 			}
 
 			p, err := room.AddPlayer(s)
 			if err != nil {
-				s.Write([]byte(fmt.Sprintf("%s\n", err)))
+				s.Write([]byte(err.Error() + "\n"))
 				s.Exit(1)
 				return
 			}
@@ -62,13 +62,10 @@ func gambitMiddleware(srv *Server) wish.Middleware {
 }
 
 func help(s string) string {
-	h := `Play chess in your terminal
-
-Usage: ssh [<name>@]<host> -p <port> -t <id> [<password>]
-
-`
-	if s != "" {
-		h += fmt.Sprintf("%s\n", s)
-	}
-	return h
+	return strings.Join([]string{
+		"Gambit: Play chess in your terminal",
+		"Usage: ssh [<name>@]<host> -p <port> -t <room> [<password>]",
+		s,
+		"\n",
+	}, "\n")
 }
