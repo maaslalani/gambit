@@ -6,7 +6,6 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/maaslalani/gambit/game"
-	"github.com/maaslalani/gambit/style"
 )
 
 // NoteMsg is a message that is sent to the client when a message is added to
@@ -16,13 +15,13 @@ type NoteMsg string
 // SharedGame is a game that is shared between players. It wraps gambit bubble
 // tea model and synchronizes messages among players and server.
 type SharedGame struct {
-	player   *Player
-	game     *game.Game
-	note     string
-	turn     bool
-	observer bool
-	roomTurn *bool
-	sync     chan tea.Msg
+	player      *Player
+	game        *game.Game
+	note        string
+	turn        bool
+	observer    bool
+	whiteToMove *bool
+	sync        chan tea.Msg
 }
 
 // NewSharedGame creates a new shared game for a player.
@@ -30,12 +29,12 @@ func NewSharedGame(p *Player, sync chan tea.Msg, roomTurn *bool, turn, observer 
 	g := game.NewGameWithPosition(pos)
 	g.SetFlipped(!turn)
 	r := &SharedGame{
-		player:   p,
-		game:     g,
-		turn:     turn,
-		observer: observer,
-		roomTurn: roomTurn,
-		sync:     sync,
+		player:      p,
+		game:        g,
+		turn:        turn,
+		observer:    observer,
+		whiteToMove: roomTurn,
+		sync:        sync,
 	}
 	return r
 }
@@ -71,7 +70,7 @@ func (r *SharedGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		r.note = string(msg)
 		return r, nil
 	case tea.MouseMsg:
-		if !r.observer && r.turn == *r.roomTurn {
+		if !r.observer && r.turn == *r.whiteToMove {
 			if msg.Type != tea.MouseLeft {
 				return r, nil
 			}
@@ -91,14 +90,14 @@ func (r *SharedGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, cmd)
 			r.game = g.(*game.Game)
 		default:
-			if !r.observer && r.turn == *r.roomTurn {
+			if !r.observer && r.turn == *r.whiteToMove {
 				g, cmd := r.game.Update(msg)
 				cmds = append(cmds, cmd)
 				r.game = g.(*game.Game)
 			}
 		}
 	default:
-		if !r.observer && r.turn == *r.roomTurn {
+		if !r.observer && r.turn == *r.whiteToMove {
 			g, cmd := r.game.Update(msg)
 			cmds = append(cmds, cmd)
 			r.game = g.(*game.Game)
@@ -114,26 +113,6 @@ func (r *SharedGame) View() string {
 	if r.note != "" {
 		s.WriteString("\n")
 		s.WriteString(r.note)
-	}
-	s.WriteString("\n")
-	s.WriteString(style.Faint(r.renderInfo()))
-	s.WriteString("\n")
-	return s.String()
-}
-
-// renderInfo returns information about the game.
-func (r *SharedGame) renderInfo() string {
-	s := strings.Builder{}
-	turn := "Black"
-	if *r.roomTurn {
-		turn = "White"
-	}
-	fmt.Fprintf(&s, "ID: %s\n", r.player.room.id)
-	fmt.Fprintf(&s, "Turn: %s\n", turn)
-	fmt.Fprintf(&s, "User: %s\n", r.player)
-	os := r.player.room.ObserversCount()
-	if os > 0 {
-		fmt.Fprintf(&s, "Observers: %d", os)
 	}
 	return s.String()
 }
