@@ -91,13 +91,13 @@ func (p *Player) Close() error {
 
 // StartGame starts the bubble tea program.
 func (p *Player) StartGame() {
-	_, winch, _ := p.session.Pty()
+	_, wchan, _ := p.session.Pty()
 	errc := make(chan error, 1)
 	go func() {
 		select {
 		case err := <-errc:
 			log.Printf("error starting program %s", err)
-		case w := <-winch:
+		case w := <-wchan:
 			if p.program != nil {
 				p.program.Send(tea.WindowSizeMsg{Width: w.Width, Height: w.Height})
 			}
