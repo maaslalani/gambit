@@ -47,7 +47,7 @@ You can host your own `gambit` SSH server with:
 gambit serve
 ```
 
-Or, use the hosted `gambit` server at `chess.fyi`:
+Or, use the hosted `gambit` server at [chess.fyi](https://chess.fyi):
 
 ```
 ssh user@chess.fyi -p 2200 -t foobar password
