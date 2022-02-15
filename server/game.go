@@ -6,6 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/maaslalani/gambit/game"
+	"github.com/maaslalani/gambit/style"
 )
 
 // NoteMsg is a message that is sent to the client when a message is added to
@@ -109,10 +110,19 @@ func (r *SharedGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View implements bubble tea model.
 func (r *SharedGame) View() string {
 	s := strings.Builder{}
-	s.WriteString(r.game.View())
-	if r.note != "" {
-		s.WriteString("\n")
-		s.WriteString(r.note)
+
+	turn := "Black's move"
+	if *r.whiteToMove {
+		turn = "White's move"
 	}
+
+	s.WriteString(r.game.View())
+
+	s.WriteRune('\n')
+	s.WriteString(fmt.Sprintf(" %s %s", style.Title("Gambit"), turn))
+	s.WriteRune('\n')
+	s.WriteString(style.Faint(fmt.Sprintf(" Room %s as %s playing %s", r.player.room.id, r.player.session.User(), r.player.ptype)))
+	s.WriteRune('\n')
+
 	return s.String()
 }
