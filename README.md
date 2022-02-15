@@ -33,18 +33,29 @@ for the second player.
   <img width="90%" src="./assets/chess.gif?raw=true" alt="Terminal chess" />
 </p>
 
+### Networked Play
+
+You can play chess with `gambit` over `ssh`.
+
+```
+ssh [<name>@]<host> -p <port> -t <room> [<password>]
+```
+
+You can host your own `gambit` SSH server with:
+
+```
+gambit serve
+```
+
+Or, use the hosted `gambit` server at `chess.fyi`:
+
+```
+ssh user@chess.fyi -p 2200 -t foobar password
+```
+
 ### Move
 
 There are two ways to move in `gambit`:
 
 * Type out the square the piece you want to move is on, then type out the square to which you want to move the piece.
 * With the mouse, click on the target piece and target square.
-
-### Future
-
-In the future, `gambit` will support:
-
-* networked play, where two players can run
-`gabmit unique-room-id` and play together through peer-to-peer communication.
-
-* Single player games, by adding a chess engine
