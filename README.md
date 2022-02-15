@@ -13,7 +13,7 @@ go install github.com/maaslalani/gambit@latest
 or run from source
 
 ```sh
-git clone github.com/maaslalani/gambit
+git clone https://github.com/maaslalani/gambit
 go run ./...
 ```
 
