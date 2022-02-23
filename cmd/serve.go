@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -23,6 +24,18 @@ var (
 		Short:   "Start a Gambit server",
 		Args:    coral.NoArgs,
 		RunE: func(cmd *coral.Command, args []string) error {
+			k := os.Getenv("GAMBIT_SERVER_KEY_PATH")
+			if k != "" {
+				key = k
+			}
+			h := os.Getenv("GAMBIT_SERVER_HOST")
+			if h != "" {
+				host = h
+			}
+			p := os.Getenv("GAMBIT_SERVER_PORT")
+			if p != "" {
+				port, _ = strconv.Atoi(p)
+			}
 			s, err := server.NewServer(key, host, port)
 			if err != nil {
 				return err
@@ -52,6 +65,6 @@ var (
 
 func init() {
 	ServeCmd.Flags().StringVar(&key, "key", "gambit", "Server private key path")
-	ServeCmd.Flags().StringVar(&host, "host", "localhost", "Server host to bind to")
+	ServeCmd.Flags().StringVar(&host, "host", "", "Server host to bind to")
 	ServeCmd.Flags().IntVar(&port, "port", 53531, "Server port to bind to")
 }
