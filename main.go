@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"runtime/debug"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -15,6 +16,9 @@ import (
 )
 
 var (
+	Version   = ""
+	CommitSHA = ""
+
 	rootCmd = &coral.Command{
 		Use:                   "gambit",
 		Short:                 "Play chess in your terminal",
@@ -47,6 +51,19 @@ var (
 )
 
 func init() {
+	if len(CommitSHA) >= 7 {
+		vt := rootCmd.VersionTemplate()
+		rootCmd.SetVersionTemplate(vt[:len(vt)-1] + " (" + CommitSHA[0:7] + ")\n")
+	}
+	if Version == "" {
+		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Sum != "" {
+			Version = info.Main.Version
+		} else {
+			Version = "unknown (built from source)"
+		}
+	}
+	rootCmd.Version = Version
+
 	rootCmd.AddCommand(
 		cmd.ServeCmd,
 	)
