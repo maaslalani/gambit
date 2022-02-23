@@ -19,7 +19,7 @@ go run ./...
 
 #### Docker
 
-Gambit is available as a Docker image at [ghcr.io/maaslalani/gambit](ghcr.io/maaslalani/gambit).
+Gambit is available as a Docker image at [ghcr.io/maaslalani/gambit](https://ghcr.io/maaslalani/gambit).
 
 ### Play
 
