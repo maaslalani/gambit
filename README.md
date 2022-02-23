@@ -17,6 +17,10 @@ git clone https://github.com/maaslalani/gambit
 go run ./...
 ```
 
+#### Docker
+
+Gambit is available as a Docker image at [ghcr.io/maaslalani/gambit](ghcr.io/maaslalani/gambit).
+
 ### Play
 
 You can play a game by running:
