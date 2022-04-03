@@ -20,9 +20,8 @@ var (
 	CommitSHA = ""
 
 	rootCmd = &coral.Command{
-		Use:                   "gambit",
-		Short:                 "Play chess in your terminal",
-		DisableFlagsInUseLine: true,
+		Use:   "gambit",
+		Short: "Play chess in your terminal",
 		RunE: func(cmd *coral.Command, args []string) error {
 			if len(args) == 0 {
 				startPos, _ := readStdin()
@@ -47,6 +46,7 @@ var (
 
 			return cmd.Help()
 		},
+		DisableFlagsInUseLine: true,
 	}
 )
 
