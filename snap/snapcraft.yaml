@@ -6,7 +6,7 @@ description: |
 
 license: MIT
 
-base: core20
+base: core22
 grade: stable 
 confinement: strict
 compression: lzo
