@@ -1,0 +1,28 @@
+name: gambit
+adopt-info: gambit
+summary: Chess board in your terminal.
+description: |
+  Chess board in your terminal.
+
+license: MIT
+
+base: core22
+grade: stable 
+confinement: strict
+compression: lzo
+
+apps:
+  gambit:
+    command: bin/gambit
+    
+parts:
+  gambit:
+    source: https://github.com/maaslalani/gambit
+    source-type: git
+    plugin: go
+    build-snaps:
+      - go
+      
+    override-pull: |
+      snapcraftctl pull
+      snapcraftctl set-version "$(git describe --tags | sed 's/^v//' | cut -d "-" -f1)"
