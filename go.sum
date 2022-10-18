@@ -17,6 +17,8 @@ github.com/charmbracelet/bubbletea v0.21.1-0.20220623121936-ca32c4c62873 h1:ti/1
 github.com/charmbracelet/bubbletea v0.21.1-0.20220623121936-ca32c4c62873/go.mod h1:aoVIwlNlr5wbCB26KhxfrqAn0bMp4YpJcoOelbxApjs=
 github.com/charmbracelet/bubbletea v0.22.1 h1:z66q0LWdJNOWEH9zadiAIXp2GN1AWrwNXU8obVY9X24=
 github.com/charmbracelet/bubbletea v0.22.1/go.mod h1:8/7hVvbPN6ZZPkczLiB8YpLkLJ0n7DMho5Wvfd2X1C0=
+github.com/charmbracelet/bubbletea v0.22.2-0.20221016150627-cbe309d6241c h1:pIUO+t+apSfbM0QBWokE8TeeE2WkEkMqKq2LNjhS9d8=
+github.com/charmbracelet/bubbletea v0.22.2-0.20221016150627-cbe309d6241c/go.mod h1:JAfGK/3/pPKHTnAS8JIE2u9f61BjWTQY57RbT25aMXU=
 github.com/charmbracelet/keygen v0.2.1 h1:H1yYTVe6qIDz+UILYXo6q+qLQNkvyXXA5KEhzyuEfzg=
 github.com/charmbracelet/keygen v0.2.1/go.mod h1:kFQ3Cvop12fXWX1K29vxDxV9x8ujG4wBSXq//GySSSk=
 github.com/charmbracelet/keygen v0.3.0 h1:mXpsQcH7DDlST5TddmXNXjS0L7ECk4/kLQYyBcsan2Y=

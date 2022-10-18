@@ -3,7 +3,7 @@ module github.com/maaslalani/gambit
 go 1.17
 
 require (
-	github.com/charmbracelet/bubbletea v0.22.1
+	github.com/charmbracelet/bubbletea v0.22.2-0.20221016150627-cbe309d6241c
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/charmbracelet/wish v0.5.0
 	github.com/dylhunn/dragontoothmg v0.0.0-20220917014754-e79413b50d93

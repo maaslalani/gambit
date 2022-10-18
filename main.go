@@ -41,7 +41,8 @@ var (
 					tea.WithMouseCellMotion(),
 				)
 
-				return p.Start()
+				_, err := p.Run()
+				return err
 			}
 
 			return cmd.Help()
