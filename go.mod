@@ -24,7 +24,6 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
-	github.com/mikesmitty/edkey v0.0.0-20170222072505-3356ea4e686a // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/muesli/ansi v0.0.0-20221106050444-61f0cd9a192a // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
