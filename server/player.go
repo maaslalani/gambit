@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/gliderlabs/ssh"
+	"github.com/charmbracelet/ssh"
 )
 
 // PlayerType is the type of a player in a chess game.

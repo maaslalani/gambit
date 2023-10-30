@@ -2,7 +2,7 @@ package style
 
 import . "github.com/charmbracelet/lipgloss"
 
-type colorFunc func(s string) string
+type colorFunc func(s ...string) string
 
 func fg(color string) colorFunc {
 	return NewStyle().Foreground(Color(color)).Render

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/gliderlabs/ssh"
+	"github.com/charmbracelet/ssh"
 	"github.com/maaslalani/gambit/game"
 )
 

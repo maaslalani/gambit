@@ -7,8 +7,8 @@ import (
 
 	gossh "golang.org/x/crypto/ssh"
 
+	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
-	"github.com/gliderlabs/ssh"
 )
 
 // PublicKey wraps ssh.PublicKey.
