@@ -41,20 +41,6 @@ func (t *Theme) Fg(content string, isLightSquare bool) string {
 	return NewStyle().Foreground(Color(t.DarkSquareColor)).Render(content)
 }
 
-func (t *Theme) borderLight(border string) string {
-	return NewStyle().
-		Background(Color(t.DarkSquareColor)).
-		Foreground(Color(t.LightSquareColor)).
-		Render(border)
-}
-
-func (t *Theme) borderDark(border string) string {
-	return NewStyle().
-		Background(Color(t.LightSquareColor)).
-		Foreground(Color(t.DarkSquareColor)).
-		Render(border)
-}
-
 // Border is used to draw the borders between ranks: it applies both
 // a foreground and a background
 func (t *Theme) Border(border string, isLightSquare bool) string {
