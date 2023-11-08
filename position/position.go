@@ -39,3 +39,17 @@ func ToSquare(row, col int, flipped bool) string {
 	}
 	return colToFile(col) + strconv.Itoa(rowToRank(row))
 }
+
+// IsLightSquare returns true if the square in given position is light
+func IsLightSquare(position string) bool {
+	file := position[0]
+	rank, err := strconv.Atoi(string(position[1]))
+	if err != nil {
+		panic(err)
+	}
+	// Rule: if the file and rank are both odd or both even, the square
+	// is dark, otherwise it is light
+	isOddFile := file%2 == 1
+	isOddRank := rank%2 == 1
+	return isOddFile != isOddRank
+}

@@ -42,6 +42,7 @@ type Game struct {
 	selected   string
 	buffer     string
 	flipped    bool
+	theme      Theme
 }
 
 // NewGame returns an initial model of the game board.
@@ -64,9 +65,104 @@ func NewGameWithPosition(position string) *Game {
 	return m
 }
 
+// NewGameWithPosition returns an initial model of the game board with the
+// specified FEN position.
+func NewGameWithPositionAndTheme(position string, theme Theme) *Game {
+	m := NewGameWithPosition(position)
+	m.theme = theme
+
+	return m
+}
+
 // Init Initializes the model
 func (m *Game) Init() tea.Cmd {
 	return nil
+}
+
+// drawRankNumber returns the string with the rank number and the eventual
+// border
+func (m *Game) drawRankNumber(rank int) string {
+	rankString := Faint(fmt.Sprintf(" %d ", rank+1))
+	if !m.theme.IsValid() {
+		rankString = rankString + border.Vertical
+	}
+	return rankString
+}
+
+// renderSelectedPiece returns the string of the piece with the selected
+// color based on the theme
+func (m *Game) renderSelectedPiece(display string, isLightSquare bool) string {
+	if m.theme.IsValid() {
+		return m.theme.SelectedSquare(display, isLightSquare)
+	}
+	return Cyan(display)
+}
+
+// renderPieceInCheck returns the string of the piece with the check
+// color based on the theme
+func (m *Game) renderPieceInCheck(display string, isLightSquare bool) string {
+	if m.theme.IsValid() {
+		return m.theme.CheckSquare(display, isLightSquare)
+	}
+	return Red(display)
+}
+
+// renderAvailableMove returns the string of the piece with the availableMove
+// color based on the theme
+func (m *Game) renderAvailableMove(display string, isLightSquare bool) string {
+	if m.theme.IsValid() {
+		return m.theme.AvailableMove(display, isLightSquare)
+	}
+	return Magenta(display)
+}
+
+// renderNormalPiece returns the string of the piece based on the theme
+func (m *Game) renderNormalPiece(display string, isWhite bool, isLightSquare bool) string {
+	if m.theme.IsValid() {
+		display = m.theme.Piece(display, isWhite, isLightSquare)
+	}
+	return display
+}
+
+// drawSquare returns the string of the piece and square to show
+func (m *Game) drawSquare(piece pieces.Piece, square string) string {
+	var s strings.Builder
+	whiteTurn := m.board.Wtomove
+	display := piece.Display()
+	check := m.board.OurKingInCheck()
+	selected := square
+	isLightSquare := position.IsLightSquare(square)
+
+	if m.theme.IsValid() {
+		// display first space
+		s.WriteString(m.theme.Bg(" ", isLightSquare))
+	}
+
+	// The user selected the current cell, highlight it so they know it is
+	// selected. If it is a check, highlight the king in red.
+	if m.selected == selected {
+		display = m.renderSelectedPiece(display, isLightSquare)
+	} else if check && piece.IsKing() &&
+		((whiteTurn && piece.IsWhite()) || (!whiteTurn && piece.IsBlack())) {
+		display = m.renderPieceInCheck(display, isLightSquare)
+	} else {
+		display = m.renderNormalPiece(display, piece.IsWhite(), isLightSquare)
+	}
+
+	// Show all the cells to which the piece may move. If it is an empty cell
+	// we present a coloured dot, otherwise color the capturable piece.
+	if moves.IsLegal(m.pieceMoves, selected) && piece.IsEmpty() {
+		display = m.renderAvailableMove(".", isLightSquare)
+	}
+
+	if m.theme.IsValid() {
+		s.WriteString(display)
+		s.WriteString(m.theme.Bg("  ", isLightSquare))
+	} else {
+		s.WriteString(fmt.Sprintf(" %s %s", display, border.Vertical))
+	}
+
+	return s.String()
 }
 
 // View converts a FEN string into a human readable chess board. All pieces and
@@ -99,7 +195,7 @@ func (m *Game) Init() tea.Cmd {
 //
 func (m *Game) View() string {
 	var s strings.Builder
-	s.WriteString(border.Top())
+	s.WriteString(border.Top(m.theme))
 
 	// Traverse through the rows and columns of the board and print out the
 	// pieces and empty squares. Once a piece is selected, highlight the legal
@@ -119,43 +215,21 @@ func (m *Game) View() string {
 			rr = r
 		}
 
-		s.WriteString(Faint(fmt.Sprintf(" %d ", rr+1)) + border.Vertical)
+		s.WriteString(m.drawRankNumber(rr))
 
 		for c, piece := range row {
-			whiteTurn := m.board.Wtomove
-			display := piece.Display()
-			check := m.board.OurKingInCheck()
-			selected := position.ToSquare(r, c, m.flipped)
-
-			// The user selected the current cell, highlight it so they know it is
-			// selected. If it is a check, highlight the king in red.
-			if m.selected == selected {
-				display = Cyan(display)
-			} else if check && piece.IsKing() {
-				if (whiteTurn && piece.IsWhite()) || (!whiteTurn && piece.IsBlack()) {
-					display = Red(display)
-				}
-			}
-
-			// Show all the cells to which the piece may move. If it is an empty cell
-			// we present a coloured dot, otherwise color the capturable piece.
-			if moves.IsLegal(m.pieceMoves, selected) {
-				if piece.IsEmpty() {
-					display = "."
-				}
-				display = Magenta(display)
-			}
-
-			s.WriteString(fmt.Sprintf(" %s %s", display, border.Vertical))
+			square := position.ToSquare(r, c, m.flipped)
+			s.WriteString(m.drawSquare(piece, square))
 		}
 		s.WriteRune('\n')
 
 		if r != board.LastRow {
-			s.WriteString(border.Middle())
+			firstSquareIsLight := position.IsLightSquare(position.ToSquare(r, 0, m.flipped))
+			s.WriteString(border.Middle(m.theme, firstSquareIsLight))
 		}
 	}
 
-	s.WriteString(border.Bottom() + Faint(border.BottomLabels(m.flipped)))
+	s.WriteString(border.Bottom(m.theme) + Faint(border.BottomLabels(m.flipped)))
 	return s.String()
 }
 
