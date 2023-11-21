@@ -13,6 +13,11 @@ func IsLegal(legalMoves []dt.Move, destination string) bool {
 		if strings.HasSuffix(move.String(), destination) {
 			return true
 		}
+
+		if move.Promote() > 1 && strings.HasSuffix(move.String(), destination+"q") {
+			return true
+		}
+
 	}
 	return false
 }
