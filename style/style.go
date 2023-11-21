@@ -12,5 +12,4 @@ var Cyan = fg("6")
 var Faint = fg("8")
 var Magenta = fg("5")
 var Red = fg("1")
-
 var Title = NewStyle().Foreground(Color("5")).Italic(true).Render

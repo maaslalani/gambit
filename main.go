@@ -12,18 +12,31 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/maaslalani/gambit/cmd"
 	"github.com/maaslalani/gambit/game"
+	"github.com/maaslalani/gambit/style"
 	"github.com/muesli/coral"
 )
 
 var (
 	Version   = ""
 	CommitSHA = ""
+	ThemeFile = ""
 
 	rootCmd = &coral.Command{
 		Use:   "gambit",
 		Short: "Play chess in your terminal",
 		RunE: func(cmd *coral.Command, args []string) error {
 			if len(args) == 0 {
+
+				// initialize theme
+				var err error
+				theme := style.Theme{}
+				if ThemeFile != "" {
+					theme, err = style.ParseThemeFile(ThemeFile)
+					if err != nil {
+						return err
+					}
+				}
+
 				startPos, _ := readStdin()
 
 				debug := os.Getenv("DEBUG")
@@ -36,12 +49,12 @@ var (
 				}
 
 				p := tea.NewProgram(
-					game.NewGameWithPosition(startPos),
+					game.NewGameWithPositionAndTheme(startPos, theme),
 					tea.WithAltScreen(),
 					tea.WithMouseCellMotion(),
 				)
 
-				_, err := p.Run()
+				_, err = p.Run()
 				return err
 			}
 
@@ -68,6 +81,9 @@ func init() {
 	rootCmd.AddCommand(
 		cmd.ServeCmd,
 	)
+
+	// add flag -t (--theme) to specify the theme file to use
+	rootCmd.Flags().StringVarP(&ThemeFile, "theme", "t", "", "Theme file path")
 }
 
 func main() {

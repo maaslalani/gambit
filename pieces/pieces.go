@@ -9,18 +9,18 @@ type Piece string
 // representations for a more human readable experience.
 var display = map[Piece]string{
 	"":  " ",
-	"B": "♝",
-	"K": "♚",
-	"N": "♞",
-	"P": "♟",
-	"Q": "♛",
-	"R": "♜",
-	"b": "♗",
-	"k": "♔",
-	"n": "♘",
-	"p": "♙",
-	"q": "♕",
-	"r": "♖",
+	"B": "\u2657",
+	"K": "\u2654",
+	"N": "\u2658",
+	"P": "\u2659",
+	"Q": "\u2655",
+	"R": "\u2656",
+	"b": "\u265d",
+	"k": "\u265a",
+	"n": "\u265e",
+	"p": "\u265f",
+	"q": "\u265b",
+	"r": "\u265c",
 }
 
 // IsWhite returns true if the piece is white.
