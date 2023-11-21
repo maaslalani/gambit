@@ -221,7 +221,7 @@ func (m *Game) Select(square string) (tea.Model, tea.Cmd) {
 		to := square
 
 		for _, move := range m.pieceMoves {
-			if move.String() == from+to {
+			if move.String() == from+to || (move.Promote() > 1 && move.String() == from+to+"q") {
 				var cmds []tea.Cmd
 				m.board.Apply(move)
 
