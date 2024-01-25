@@ -221,9 +221,25 @@ func (m *Game) Select(square string) (tea.Model, tea.Cmd) {
 		to := square
 
 		for _, move := range m.pieceMoves {
-			if move.String() == from+to || (move.Promote() > 1 && move.String() == from+to+"q") {
-				var cmds []tea.Cmd
-				m.board.Apply(move)
+	if move.String() == from+to || (move.Promote() > 1 && move.String() == from+to+"q") {
+		var cmds []tea.Cmd
+		if m.board.Apply(move) {
+			// Board application was successful, proceed with other commands.
+			m.moves = m.board.GenerateLegalMoves()
+			check := m.board.OurKingInCheck()
+			checkmate := check && len(m.moves) == 0
+			g, cmd := m.Deselect()
+			cmds = append(cmds, cmd, m.Notify(from, to, m.board.Wtomove, check, checkmate))
+			return g, tea.Batch(cmds...)
+		} else {
+			// Handle the case where applying the move fails.
+			// You might want to log an error or take appropriate action.
+			// Example: log.Println("Failed to apply move:", move)
+			return m, nil
+		}
+	}
+}
+
 
 				// We have applied a new move and the chess board is in a new state.
 				// We must generate the new legal moves for the new state.
