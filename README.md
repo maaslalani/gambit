@@ -14,6 +14,7 @@ or run from source
 
 ```sh
 git clone https://github.com/maaslalani/gambit
+cd gambit/
 go run ./...
 ```
 
